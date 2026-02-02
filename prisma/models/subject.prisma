@@ -1,0 +1,8 @@
+model Subject {
+  id        Int      @id @default(autoincrement())
+  name      String
+  teacher   String
+  number    Int
+
+  @@map("subjects")
+}

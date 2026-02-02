@@ -1,0 +1,95 @@
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common'
+import { PrismaService } from '../../prisma/prisma.service'
+import { WeekTemplateCreateDto, WeekTemplateDto } from './week-template.dto'
+import { plainToInstance } from 'class-transformer'
+
+@Injectable()
+export class WeekTemplateService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(dto: WeekTemplateCreateDto, groupName: string) {
+    let weekTemplate: WeekTemplateCreateDto
+
+    const group = await this.prisma.group.findUnique({
+      where: { name: groupName },
+      select: {
+        schedule: {
+          select: { id: true }
+        }
+      }
+    })
+
+    if (!group) {
+      throw new BadRequestException(
+        `There is no group with name ${groupName}!`,
+      );
+    }
+
+    if (!group.schedule) {
+      throw new BadRequestException(
+        `There is no schedule with group name ${groupName}!`,
+      );
+    }
+
+    try {
+      weekTemplate = await this.prisma.weekTemplate.create({
+        data: {
+          type: dto.type,
+          scheduleId: group.schedule.id,
+          day: {
+            create: dto.day.map(d => ({
+              lesson: {
+                create: d.lesson.map(l => ({
+                  classroom: l.classroom,
+                  slotNumber: l.slotNumber,
+                  slotLength: l.slotLength,
+                  isAvailable: l.isAvailable,
+                })),
+              },
+              slot: {
+                create: d.slot.map(s => ({
+                  end: s.end,
+                  start: s.start,
+                }))
+              }
+            })),
+          }
+        },
+        include: {
+          day: {
+            include: {
+              lesson: true,
+              slot: true
+            }
+          }
+        }
+      });
+    } catch (e) {
+      if (e.code === 'P2003') {
+        throw new NotFoundException(
+          `Schedule with id ${group.schedule.id} not found`,
+        );
+      }
+      if (e.code === 'P2002') {
+        throw new ConflictException(
+          'Duplicate entry detected'
+        )
+      }
+      throw e;
+    }
+
+    return plainToInstance(WeekTemplateDto, weekTemplate)
+  }
+
+  async deleteById(id: number) {
+    try {
+      await this.prisma.weekTemplate.delete({ where: { id: id } })
+    } catch (e) {
+      if (e.code === 'P2025') {
+        throw new NotFoundException(`Week Template with id ${id} not found`)
+      }
+      throw e
+    }
+  }
+
+}

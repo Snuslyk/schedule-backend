@@ -1,0 +1,123 @@
+model Organization {
+  id        Int      @id @default(autoincrement())
+  name      String
+  shortName String   @map("short_name")
+
+  @@map("organizations")
+}
+
+model Student {
+  id        Int        @id @default(autoincrement())
+  name      String
+
+  //groupId      Int @unique @map("group_id")
+  //group      Group @relation(fields: [groupId], references: [id])
+
+  @@map("student")
+}
+
+model Group {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  schedule  Schedule? @relation
+
+  //student Student[]
+
+  @@map("group")
+}
+
+model Schedule {
+  id           Int          @id @default(autoincrement())
+  start        DateTime
+  end          DateTime
+
+  groupId      Int          @unique @map("group_id")
+  group        Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  replace   Replace[]
+
+  weekTemplate WeekTemplate? @relation
+
+  @@index([groupId])
+  @@map("schedule")
+}
+
+model WeekTemplate {
+  id        Int       @id @default(autoincrement())
+  type      WeekType  @default(EVEN)
+  day       Day[]
+
+  scheduleId Int       @unique @map("schedule_id")
+  schedule   Schedule  @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+
+  @@map("week_template")
+}
+
+enum WeekType {
+  EVEN
+  ODD
+  OTHER
+}
+
+model Day {
+  id        Int       @id @default(autoincrement())
+  slot Slot[]
+  lesson Lesson[]
+
+  weekTemplateId Int       @map("week_template_id")
+  weekTemplate   WeekTemplate  @relation(fields: [weekTemplateId], references: [id], onDelete: Cascade)
+
+  @@map("day")
+}
+
+model Replace {
+  id        Int       @id @default(autoincrement())
+  date DateTime
+  slotNumber Int @map("order_number")
+
+  lessonId Int       @unique @map("replace_id")
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  weekTemplateId Int       @map("week_template_id")
+  weekTemplate   Schedule  @relation(fields: [weekTemplateId], references: [id], onDelete: Cascade)
+
+  @@map("replace")
+}
+
+model Slot {
+  id        Int       @id @default(autoincrement())
+  start Int
+  end   Int
+
+  dayId Int       @map("day_id")
+  day   Day  @relation(fields: [dayId], references: [id], onDelete: Cascade)
+
+  @@map("slot")
+}
+
+model Lesson {
+  id        Int       @id @default(autoincrement())
+  classroom String
+  slotNumber Int @map("order_number")
+  slotLength Int @map("order_length")
+  isAvailable Boolean @default(false) @map("is_available")
+
+  replace   Replace?  @relation
+
+  dayId Int       @map("day_id")
+  day   Day  @relation(fields: [dayId], references: [id], onDelete: Cascade)
+
+  @@map("lesson")
+}
+
+model Owner {
+  id        Int       @id @default(autoincrement())
+  classroom String
+
+  @@map("owner")
+}
+
+enum OwnerType {
+  TEACHER
+  STUDENT
+}
