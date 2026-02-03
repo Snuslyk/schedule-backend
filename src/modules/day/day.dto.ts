@@ -4,9 +4,9 @@ import { SlotCreateDto, SlotDto } from '../slot/slot.dto'
 import { Type } from 'class-transformer'
 
 export class DayDto {
-  id: number
-  lesson: LessonDto[]
-  slot: SlotDto[]
+  id?: number
+  lessons: LessonDto[]
+  slots: SlotDto[]
 }
 
 export class DayCreateDto {

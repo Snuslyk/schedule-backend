@@ -32,7 +32,7 @@ model Schedule {
 
   replaces Replace[]
 
-  weekTemplate WeekTemplate? @relation
+  weekTemplate WeekTemplate[]
 
   @@index([groupId])
   @@map("schedule")
@@ -43,7 +43,7 @@ model WeekTemplate {
   type WeekType @default(EVEN)
   days Day[]
 
-  scheduleId Int      @unique @map("schedule_id")
+  scheduleId Int      @map("schedule_id")
   schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
 
   @@map("week_template")

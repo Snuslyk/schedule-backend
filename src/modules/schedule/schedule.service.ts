@@ -1,13 +1,37 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../../prisma/prisma.service'
-import { getWeekDayIndex, isSameWeek } from '../../utils/date'
-import { ScheduleCreateDto } from './schedule.dto'
+import {
+  getWeekDayIndex,
+  getWeekParity,
+  isDateInRange,
+  isSameWeek,
+  isWeekDayInRange,
+  startOfWeek,
+} from '../../utils/date'
+import { ScheduleCreateDto, ScheduleDto } from './schedule.dto'
+import { WeekTemplateDto } from '../week-template/week-template.dto'
+import { ReplaceDto } from '../replace/replace.dto'
 
 @Injectable()
 export class ScheduleService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getWeek(start: Date, groupName: string) {
+  async getParityGroupWeek(weekDate: Date, groupName: string) {
+    const group = await this.getGroup(groupName)
+    const schedule: ScheduleDto = await this.getSchedule(group.id, groupName)
+
+    const startOfWeekDate = startOfWeek(weekDate)
+    const week = this.getWeekTemplate(schedule, startOfWeekDate)
+
+    this.applyScheduleRange(week, startOfWeekDate, schedule)
+
+    const replaces = this.getWeekReplaces(schedule, startOfWeekDate)
+    this.applyReplaces(week, replaces)
+
+    return week
+  }
+
+  private async getGroup(groupName: string) {
     const group = await this.prisma.group.findUnique({
       where: { name: groupName },
     })
@@ -18,39 +42,24 @@ export class ScheduleService {
       )
     }
 
+    return group
+  }
+
+  private async getSchedule(groupId: number, groupName: string) {
     const schedule = await this.prisma.schedule.findUnique({
-      where: { groupId: group.id },
+      where: { groupId },
       include: {
         replaces: {
-          omit: {
-            id: true,
-            scheduleId: true,
-          },
+          omit: { id: true, scheduleId: true },
         },
         weekTemplate: {
-          omit: {
-            id: true,
-            scheduleId: true
-          },
+          omit: { id: true, scheduleId: true },
           include: {
             days: {
-              omit: {
-                id: true,
-                weekTemplateId: true
-              },
+              omit: { id: true, weekTemplateId: true },
               include: {
-                lessons: {
-                  omit: {
-                    id: true,
-                    dayId: true
-                  }
-                },
-                slots: {
-                  omit: {
-                    id: true,
-                    dayId: true
-                  }
-                },
+                lessons: { omit: { id: true, dayId: true } },
+                slots: { omit: { id: true, dayId: true } },
               },
             },
           },
@@ -64,33 +73,55 @@ export class ScheduleService {
       )
     }
 
-    const week = schedule.weekTemplate
+    return schedule
+  }
+
+  private getWeekTemplate(schedule: ScheduleDto, start: Date) {
+    const weekParity = getWeekParity(start)
+    const week = schedule.weekTemplate.find(w => w.type === weekParity)
 
     if (!week) {
-      throw new BadRequestException('Schedule has no week template')
+      throw new BadRequestException(
+        `Schedule has no ${weekParity} week template`,
+      )
     }
 
-    const replaces = schedule.replaces.filter((r) => isSameWeek(r.date, start))
+    return week
+  }
 
-    if (!replaces) return week
+  private applyScheduleRange(week: WeekTemplateDto, start: Date, schedule: ScheduleDto) {
+    week.days = week.days.map((day, index) =>
+      isWeekDayInRange(start, index, schedule.start, schedule.end)
+        ? day
+        : { lessons: [], slots: [] },
+    )
+  }
 
-    replaces.forEach(replace => {
+  private getWeekReplaces(schedule: ScheduleDto, start: Date) {
+    return schedule.replaces.filter(
+      r =>
+        isSameWeek(r.date, start) &&
+        isDateInRange(r.date, schedule.start, schedule.end),
+    )
+  }
+
+  private applyReplaces(week: WeekTemplateDto, replaces: ReplaceDto[]) {
+    for (const replace of replaces) {
       const dayIndex = getWeekDayIndex(replace.date)
       const day = week.days[dayIndex]
+      if (!day) continue
 
-      const lessonIndex = day.lessons.findIndex(
-        (l) => l.slotNumber === replace.slotNumber,
+      const lesson = day.lessons.find(
+        l => l.slotNumber === replace.slotNumber,
       )
 
-      if (lessonIndex !== -1) {
-        day.lessons[lessonIndex].classroom = replace.classroom
-        day.lessons[lessonIndex].isAvailable = replace.isAvailable
-        day.lessons[lessonIndex].teacherId = replace.teacherId
-        day.lessons[lessonIndex].subjectId = replace.teacherId
-      }
-    })
+      if (!lesson) continue
 
-    return week
+      lesson.classroom = replace.classroom
+      lesson.isAvailable = replace.isAvailable
+      lesson.teacherId = replace.teacherId
+      lesson.subjectId = replace.subjectId
+    }
   }
 
   async create(dto: ScheduleCreateDto) {

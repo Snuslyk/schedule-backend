@@ -7,9 +7,9 @@ import { ScheduleCreateDto } from './schedule.dto'
 export class ScheduleController {
   constructor(private readonly scheduleService: ScheduleService) {}
 
-  @Get('week')
-  getWeek(@Query('start', DatePipe) start: Date, @Query('group') group: string) {
-    return this.scheduleService.getWeek(start, group)
+  @Get('week/group')
+  getParityGroupWeek(@Query('start', DatePipe) start: Date, @Query('group') group: string) {
+    return this.scheduleService.getParityGroupWeek(start, group)
   }
 
   @Post()

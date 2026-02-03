@@ -3,11 +3,11 @@ import { ReplaceDto } from '../replace/replace.dto'
 import { WeekTemplateDto } from '../week-template/week-template.dto'
 
 export class ScheduleDto {
-  id: number;
+  id?: number;
   start: Date;
   end: Date;
-  weekTemplate?: WeekTemplateDto;
-  replace?: ReplaceDto[];
+  weekTemplate: WeekTemplateDto[];
+  replaces: ReplaceDto[];
 }
 
 export class ScheduleCreateDto {

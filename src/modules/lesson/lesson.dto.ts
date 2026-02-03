@@ -1,7 +1,7 @@
 import { IsNumber, IsString, IsBoolean } from 'class-validator';
 
 export class LessonDto {
-  id: number
+  id?: number
   classroom: string
   slotNumber: number
   slotLength: number

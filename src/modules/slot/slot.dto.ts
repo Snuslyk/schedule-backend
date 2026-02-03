@@ -1,7 +1,7 @@
 import { IsNumber } from 'class-validator';
 
 export class SlotDto {
-  id: number
+  id?: number
   start: number
   end: number
 }

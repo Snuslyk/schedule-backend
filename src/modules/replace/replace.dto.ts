@@ -1,19 +1,21 @@
 import { IsNumber, IsDate, IsString, IsBoolean } from 'class-validator'
-import { LessonDto } from '../lesson/lesson.dto'
 
 export class ReplaceDto {
-  id: number;
-  date: Date;
-  slotNumber: number;
-  lesson: LessonDto;
+  id?: number
+  date: Date
+  slotNumber: number
+  classroom: string
+  teacherId: number
+  subjectId: number
+  isAvailable: boolean
 }
 
 export class ReplaceCreateDto {
   @IsDate()
-  date: Date;
+  date: Date
 
   @IsNumber()
-  slotNumber: number;
+  slotNumber: number
 
   @IsString()
   classroom: string

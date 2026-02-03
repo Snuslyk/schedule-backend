@@ -6,9 +6,9 @@ import { Type } from 'class-transformer'
 import { EvenOrOddWeekConstraint } from '../../validators/even-or-odd-week.validator'
 
 export class WeekTemplateDto {
-  id: number
+  id?: number
   type: WeekType
-  day: DayDto[]
+  days: DayDto[]
 }
 
 export class WeekTemplateCreateDto {
