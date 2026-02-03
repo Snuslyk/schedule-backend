@@ -11,8 +11,8 @@ export class DayService {
         id: id
       },
       include: {
-        lesson: true,
-        slot: true
+        lessons: true,
+        slots: true
       }
     })
     if (!day) throw new NotFoundException(`Day with id ${id} not found`)

@@ -6,6 +6,8 @@ export class LessonDto {
   slotNumber: number
   slotLength: number
   isAvailable: boolean
+  teacherId: number
+  subjectId: number
 }
 
 export class LessonCreateDto {
@@ -20,4 +22,10 @@ export class LessonCreateDto {
 
   @IsBoolean()
   isAvailable: boolean
+
+  @IsNumber()
+  teacherId: number
+
+  @IsNumber()
+  subjectId: number
 }

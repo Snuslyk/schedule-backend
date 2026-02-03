@@ -7,33 +7,27 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common'
-import { SubjectsService } from './subjects.service'
+import { SubjectService } from './subject.service'
 import { ConceptionPipe } from '../../conception/conception.pipe'
 import { ConceptionGuard } from '../../conception/conception.guard'
 import { ConceptionInterceptor } from '../../conception/conception.interceptor'
-import { CreateSubjectsDto } from './subject.dto'
+import { CreateSubjectDto } from './subject.dto'
 
-@Controller('subjects')
+@Controller('subject')
 @UseInterceptors(ConceptionInterceptor)
-export class SubjectsController {
-  constructor(private readonly subjectsService: SubjectsService) {}
+export class SubjectController {
+  constructor(private readonly subjectService: SubjectService) {}
 
   @Get()
   @UseGuards(ConceptionGuard)
   findAll(@Query('pageNumber', ConceptionPipe) pageNumber: number) {
     console.log(pageNumber)
-    return this.subjectsService.findAll()
+    return this.subjectService.findAll()
   }
 
   @Post()
-  @UseGuards(ConceptionGuard)
-  async create(@Body() dto: CreateSubjectsDto) {
-    return await this.subjectsService.create(dto)
-  }
-
-  //@Put()
   //@UseGuards(ConceptionGuard)
-  //update(@Body() dto: CreateSubjectsDto) {
-  //  return this.subjectsService.up
-  //}
+  create(@Body() dto: CreateSubjectDto) {
+    return this.subjectService.create(dto)
+  }
 }

@@ -1,20 +1,29 @@
-import { ValidateNested, IsNumber, IsDate, IsOptional } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsNumber, IsDate, IsString, IsBoolean } from 'class-validator'
 import { LessonDto } from '../lesson/lesson.dto'
 
 export class ReplaceDto {
-  @IsOptional()
-  @IsNumber()
   id: number;
+  date: Date;
+  slotNumber: number;
+  lesson: LessonDto;
+}
 
+export class ReplaceCreateDto {
   @IsDate()
   date: Date;
 
   @IsNumber()
   slotNumber: number;
 
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => LessonDto)
-  lesson?: LessonDto;
+  @IsString()
+  classroom: string
+
+  @IsBoolean()
+  isAvailable: boolean
+
+  @IsNumber()
+  teacherId: number
+
+  @IsNumber()
+  subjectId: number
 }

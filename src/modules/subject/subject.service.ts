@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../../prisma/prisma.service'
-import { CreateSubjectsDto } from './subject.dto'
+import { CreateSubjectDto } from './subject.dto'
 
 @Injectable()
-export class SubjectsService {
+export class SubjectService {
   constructor(private readonly prisma: PrismaService) {}
 
   findAll() {
     return this.prisma.subject.findMany()
   }
 
-  create(dto: CreateSubjectsDto) {
+  create(dto: CreateSubjectDto) {
     return this.prisma.subject.create({
       data: dto
     })

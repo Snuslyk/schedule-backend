@@ -36,18 +36,20 @@ export class WeekTemplateService {
         data: {
           type: dto.type,
           scheduleId: group.schedule.id,
-          day: {
-            create: dto.day.map(d => ({
-              lesson: {
-                create: d.lesson.map(l => ({
+          days: {
+            create: dto.days.map(d => ({
+              lessons: {
+                create: d.lessons.map(l => ({
                   classroom: l.classroom,
                   slotNumber: l.slotNumber,
                   slotLength: l.slotLength,
                   isAvailable: l.isAvailable,
+                  teacherId: l.teacherId,
+                  subjectId: l.subjectId
                 })),
               },
-              slot: {
-                create: d.slot.map(s => ({
+              slots: {
+                create: d.slots.map(s => ({
                   end: s.end,
                   start: s.start,
                 }))
@@ -55,11 +57,29 @@ export class WeekTemplateService {
             })),
           }
         },
+        omit: {
+          id: true,
+          scheduleId: true
+        },
         include: {
-          day: {
+          days: {
+            omit: {
+              id: true,
+              weekTemplateId: true
+            },
             include: {
-              lesson: true,
-              slot: true
+              lessons: {
+                omit: {
+                  id: true,
+                  dayId: true
+                },
+              },
+              slots: {
+                omit: {
+                  id: true,
+                  dayId: true
+                },
+              }
             }
           }
         }

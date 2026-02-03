@@ -17,11 +17,11 @@ export class DayCreateDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => LessonCreateDto)
-  lesson: LessonCreateDto[] = []
+  lessons: LessonCreateDto[] = []
 
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => SlotCreateDto)
-  slot: SlotCreateDto[] = []
+  slots: SlotCreateDto[] = []
 
 }

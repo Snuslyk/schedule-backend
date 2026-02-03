@@ -1,40 +1,36 @@
 model Organization {
-  id        Int      @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
   name      String
-  shortName String   @map("short_name")
+  shortName String @map("short_name")
 
   @@map("organizations")
 }
 
 model Student {
-  id        Int        @id @default(autoincrement())
-  name      String
-
-  //groupId      Int @unique @map("group_id")
-  //group      Group @relation(fields: [groupId], references: [id])
+  id   Int    @id @default(autoincrement())
+  name String
 
   @@map("student")
 }
 
 model Group {
-  id        Int        @id @default(autoincrement())
-  name      String     @unique
-  schedule  Schedule? @relation
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  schedule Schedule? @relation
 
-  //student Student[]
-
+  @@index([name])
   @@map("group")
 }
 
 model Schedule {
-  id           Int          @id @default(autoincrement())
-  start        DateTime
-  end          DateTime
+  id    Int      @id @default(autoincrement())
+  start DateTime
+  end   DateTime
 
-  groupId      Int          @unique @map("group_id")
-  group        Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId Int   @unique @map("group_id")
+  group   Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
-  replace   Replace[]
+  replaces Replace[]
 
   weekTemplate WeekTemplate? @relation
 
@@ -43,12 +39,12 @@ model Schedule {
 }
 
 model WeekTemplate {
-  id        Int       @id @default(autoincrement())
-  type      WeekType  @default(EVEN)
-  day       Day[]
+  id   Int      @id @default(autoincrement())
+  type WeekType @default(EVEN)
+  days Day[]
 
-  scheduleId Int       @unique @map("schedule_id")
-  schedule   Schedule  @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  scheduleId Int      @unique @map("schedule_id")
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
 
   @@map("week_template")
 }
@@ -60,64 +56,81 @@ enum WeekType {
 }
 
 model Day {
-  id        Int       @id @default(autoincrement())
-  slot Slot[]
-  lesson Lesson[]
+  id      Int      @id @default(autoincrement())
+  slots   Slot[]
+  lessons Lesson[]
 
-  weekTemplateId Int       @map("week_template_id")
-  weekTemplate   WeekTemplate  @relation(fields: [weekTemplateId], references: [id], onDelete: Cascade)
+  weekTemplateId Int          @map("week_template_id")
+  weekTemplate   WeekTemplate @relation(fields: [weekTemplateId], references: [id], onDelete: Cascade)
 
   @@map("day")
 }
 
-model Replace {
-  id        Int       @id @default(autoincrement())
-  date DateTime
-  slotNumber Int @map("order_number")
-
-  lessonId Int       @unique @map("replace_id")
-  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-
-  weekTemplateId Int       @map("week_template_id")
-  weekTemplate   Schedule  @relation(fields: [weekTemplateId], references: [id], onDelete: Cascade)
-
-  @@map("replace")
-}
-
 model Slot {
-  id        Int       @id @default(autoincrement())
+  id    Int @id @default(autoincrement())
   start Int
   end   Int
 
-  dayId Int       @map("day_id")
-  day   Day  @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  dayId Int @map("day_id")
+  day   Day @relation(fields: [dayId], references: [id], onDelete: Cascade)
 
   @@map("slot")
 }
 
+model Replace {
+  id          Int      @id @default(autoincrement())
+  date        DateTime
+  slotNumber  Int      @map("order_number")
+  classroom   String
+  isAvailable Boolean  @default(false) @map("is_available")
+
+  teacherId Int     @map("teacher_id")
+  teacher   Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  subjectId Int     @map("subject_id")
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  scheduleId Int      @map("schedule_id")
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+
+  @@map("replace")
+}
+
 model Lesson {
-  id        Int       @id @default(autoincrement())
-  classroom String
-  slotNumber Int @map("order_number")
-  slotLength Int @map("order_length")
+  id          Int     @id @default(autoincrement())
+  classroom   String
+  slotNumber  Int     @map("order_number")
+  slotLength  Int     @map("order_length")
   isAvailable Boolean @default(false) @map("is_available")
 
-  replace   Replace?  @relation
+  teacherId Int     @map("teacher_id")
+  teacher   Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
 
-  dayId Int       @map("day_id")
-  day   Day  @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  subjectId Int     @map("subject_id")
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  dayId Int @map("day_id")
+  day   Day @relation(fields: [dayId], references: [id], onDelete: Cascade)
 
   @@map("lesson")
 }
 
-model Owner {
-  id        Int       @id @default(autoincrement())
-  classroom String
+model Subject {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  teachers Teacher[] @relation
+  lessons  Lesson[]
+  replaces Replace[]
 
-  @@map("owner")
+  @@map("subject")
 }
 
-enum OwnerType {
-  TEACHER
-  STUDENT
+model Teacher {
+  id       Int       @id @default(autoincrement())
+  name     String
+  lessons  Lesson[]
+  replaces Replace[]
+  subjects Subject[] @relation
+
+  @@map("teacher")
 }

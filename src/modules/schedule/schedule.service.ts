@@ -21,14 +21,10 @@ export class ScheduleService {
     const schedule = await this.prisma.schedule.findUnique({
       where: { groupId: group.id },
       include: {
-        replace: {
-          include: {
-            lesson: {
-              omit: {
-                id: true,
-                dayId: true
-              }
-            },
+        replaces: {
+          omit: {
+            id: true,
+            scheduleId: true,
           },
         },
         weekTemplate: {
@@ -37,19 +33,19 @@ export class ScheduleService {
             scheduleId: true
           },
           include: {
-            day: {
+            days: {
               omit: {
                 id: true,
                 weekTemplateId: true
               },
               include: {
-                lesson: {
+                lessons: {
                   omit: {
                     id: true,
                     dayId: true
                   }
                 },
-                slot: {
+                slots: {
                   omit: {
                     id: true,
                     dayId: true
@@ -68,29 +64,31 @@ export class ScheduleService {
       )
     }
 
-    const replace = schedule.replace.find((r) => isSameWeek(r.date, start))
     const week = schedule.weekTemplate
 
     if (!week) {
       throw new BadRequestException('Schedule has no week template')
     }
 
-    //if (!replace) return week as WeekTemplateDto
-    if (!replace) return week
+    const replaces = schedule.replaces.filter((r) => isSameWeek(r.date, start))
 
-    if (!replace.lesson)
-      throw new BadRequestException('There is no lesson in replace!')
+    if (!replaces) return week
 
-    const dayIndex = getWeekDayIndex(replace.date)
-    const day = week.day[dayIndex]
+    replaces.forEach(replace => {
+      const dayIndex = getWeekDayIndex(replace.date)
+      const day = week.days[dayIndex]
 
-    const lessonIndex = day.lesson.findIndex(
-      (l) => l.slotNumber === replace.slotNumber,
-    )
+      const lessonIndex = day.lessons.findIndex(
+        (l) => l.slotNumber === replace.slotNumber,
+      )
 
-    if (lessonIndex !== -1) {
-      day.lesson[lessonIndex] = replace.lesson
-    }
+      if (lessonIndex !== -1) {
+        day.lessons[lessonIndex].classroom = replace.classroom
+        day.lessons[lessonIndex].isAvailable = replace.isAvailable
+        day.lessons[lessonIndex].teacherId = replace.teacherId
+        day.lessons[lessonIndex].subjectId = replace.teacherId
+      }
+    })
 
     return week
   }

@@ -19,5 +19,5 @@ export class WeekTemplateCreateDto {
   @ValidateNested({ each: true })
   @Type(() => DayCreateDto)
   @Validate(EvenOrOddWeekConstraint)
-  day: DayCreateDto[]
+  days: DayCreateDto[]
 }
