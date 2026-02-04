@@ -76,7 +76,17 @@ export class GroupScheduleService {
             days: {
               omit: { id: true, weekTemplateId: true },
               include: {
-                lessons: { omit: { id: true, dayId: true } },
+                lessons: {
+                  omit: { id: true, dayId: true, teacherId: true, subjectId: true },
+                  include: {
+                    teacher: {
+                      omit: { id: true }
+                    },
+                    subject: {
+                      omit: { id: true }
+                    } 
+                  }
+                },
                 slots: { omit: { id: true, dayId: true } },
               },
             },
