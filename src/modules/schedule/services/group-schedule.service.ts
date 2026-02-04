@@ -170,6 +170,8 @@ export class GroupScheduleService {
       lesson.isAvailable = replace.isAvailable
       lesson.teacherId = replace.teacherId
       lesson.subjectId = replace.subjectId
+      lesson.teacher.name = replace.teacher.name
+      lesson.subject.name = replace.subject.name
     }
   }
 }
