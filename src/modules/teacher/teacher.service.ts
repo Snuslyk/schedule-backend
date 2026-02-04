@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { TeacherCreateDto } from './teacher.dto';
+import { CreateTeacherDto } from './teacher.dto';
 import { PrismaService } from '../../prisma/prisma.service'
 
 @Injectable()
@@ -7,7 +7,7 @@ export class TeacherService {
   constructor(private readonly prisma: PrismaService) {
   }
 
-  create(dto: TeacherCreateDto) {
+  create(dto: CreateTeacherDto) {
     return this.prisma.teacher.create({ data: dto })
   }
 

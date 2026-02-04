@@ -7,7 +7,7 @@ export class TeacherDto {
   lessons: LessonDto[];
 }
 
-export class TeacherCreateDto {
+export class CreateTeacherDto {
   @IsString()
   name: string
 }

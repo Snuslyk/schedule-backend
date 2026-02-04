@@ -10,7 +10,7 @@ export class LessonDto {
   subjectId: number
 }
 
-export class LessonCreateDto {
+export class CreateLessonDto {
   @IsString()
   classroom: string
 

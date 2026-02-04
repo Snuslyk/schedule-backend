@@ -1,14 +1,14 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../../prisma/prisma.service'
-import { WeekTemplateCreateDto, WeekTemplateDto } from './week-template.dto'
+import { CreateWeekTemplateDto, WeekTemplateDto } from './week-template.dto'
 import { plainToInstance } from 'class-transformer'
 
 @Injectable()
 export class WeekTemplateService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(dto: WeekTemplateCreateDto, groupName: string) {
-    let weekTemplate: WeekTemplateCreateDto
+  async create(dto: CreateWeekTemplateDto, groupName: string) {
+    let weekTemplate: CreateWeekTemplateDto
 
     const group = await this.prisma.group.findUnique({
       where: { name: groupName },

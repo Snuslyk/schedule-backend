@@ -7,7 +7,7 @@ export class GroupDto {
   //schedule?: ScheduleDto | null;
 }
 
-export class GroupCreateDto {
+export class CreateGroupDto {
   @IsString()
   name: string;
 

@@ -1,7 +1,7 @@
 // week-template.dto.ts
 import { IsArray, IsEnum, Validate, ValidateNested } from 'class-validator'
 import { WeekType } from '../../../generated/prisma/enums'
-import { DayCreateDto, DayDto } from '../day/day.dto'
+import { CreateDayDto, DayDto } from '../day/day.dto'
 import { Type } from 'class-transformer'
 import { EvenOrOddWeekConstraint } from '../../validators/even-or-odd-week.validator'
 
@@ -11,13 +11,13 @@ export class WeekTemplateDto {
   days: DayDto[]
 }
 
-export class WeekTemplateCreateDto {
+export class CreateWeekTemplateDto {
   @IsEnum(WeekType)
   type: WeekType
 
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => DayCreateDto)
+  @Type(() => CreateDayDto)
   @Validate(EvenOrOddWeekConstraint)
-  days: DayCreateDto[]
+  days: CreateDayDto[]
 }

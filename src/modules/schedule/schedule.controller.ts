@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common'
 import { ScheduleService } from './schedule.service';
 import { DatePipe } from '../../date/date.pipe'
-import { ScheduleCreateDto } from './schedule.dto'
+import { CreateScheduleDto } from './schedule.dto'
 
 @Controller('schedule')
 export class ScheduleController {
@@ -13,7 +13,7 @@ export class ScheduleController {
   }
 
   @Post()
-  create(@Body() dto: ScheduleCreateDto) {
+  create(@Body() dto: CreateScheduleDto) {
     return this.scheduleService.create(dto)
   }
 }

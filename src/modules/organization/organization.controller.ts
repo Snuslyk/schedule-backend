@@ -1,13 +1,13 @@
 import { Body, Controller, Post } from '@nestjs/common'
 import { OrganizationService } from './organization.service';
-import { OrganizationDto } from './organization.dto'
+import { CreateOrganizationDto } from './organization.dto'
 
 @Controller('organization')
 export class OrganizationController {
   constructor(private readonly organizationService: OrganizationService) {}
 
   @Post()
-  create(@Body() data: OrganizationDto) {
+  create(@Body() data: CreateOrganizationDto) {
 
   }
 }

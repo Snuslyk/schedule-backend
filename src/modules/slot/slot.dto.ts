@@ -6,7 +6,7 @@ export class SlotDto {
   end: number
 }
 
-export class SlotCreateDto {
+export class CreateSlotDto {
 
   @IsNumber()
   start: number

@@ -10,7 +10,7 @@ export class ScheduleDto {
   replaces: ReplaceDto[];
 }
 
-export class ScheduleCreateDto {
+export class CreateScheduleDto {
   @IsDate()
   start: Date;
 

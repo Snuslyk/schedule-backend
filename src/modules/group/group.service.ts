@@ -1,6 +1,6 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../../prisma/prisma.service'
-import { GroupCreateDto, GroupDto } from './group.dto'
+import { CreateGroupDto, GroupDto } from './group.dto'
 
 @Injectable()
 export class GroupService {
@@ -26,7 +26,7 @@ export class GroupService {
     return group
   }
 
-  async create(dto: GroupCreateDto) {
+  async create(dto: CreateGroupDto) {
     try {
       return await this.prisma.group.create({
         data: {

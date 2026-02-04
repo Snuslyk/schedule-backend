@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
-import { SubjectModule } from './modules/subject/subjectModule'
+import { SubjectModule } from './modules/subject/subject.module'
 import { ConfigModule } from '@nestjs/config'
 import { ConceptionMiddleware } from './conception/conception.middleware'
 import { OrganizationModule } from './modules/organization/organization.module';
@@ -15,7 +15,18 @@ import { TeacherModule } from './modules/teacher/teacher.module';
 import { ReplaceModule } from './modules/replace/replace.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), PrismaModule, SubjectModule, OrganizationModule, ScheduleModule, GroupModule, WeekTemplateModule, DayModule, LessonModule, TeacherModule, ReplaceModule],
+  imports: [
+    ConfigModule.forRoot(),
+    PrismaModule, SubjectModule,
+    OrganizationModule,
+    ScheduleModule,
+    GroupModule,
+    WeekTemplateModule,
+    DayModule,
+    LessonModule,
+    TeacherModule,
+    ReplaceModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -1,13 +1,13 @@
 import { Body, Controller, Delete, HttpCode, HttpStatus, Param, ParseIntPipe, Post } from '@nestjs/common'
 import { WeekTemplateService } from './week-template.service';
-import { WeekTemplateCreateDto } from './week-template.dto'
+import { CreateWeekTemplateDto } from './week-template.dto'
 
 @Controller('week-template')
 export class WeekTemplateController {
   constructor(private readonly weekTemplateService: WeekTemplateService) {}
 
   @Post(':name')
-  create(@Body() dto: WeekTemplateCreateDto, @Param('name') group: string) {
+  create(@Body() dto: CreateWeekTemplateDto, @Param('name') group: string) {
     return this.weekTemplateService.create(dto, group)
   }
 

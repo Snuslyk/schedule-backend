@@ -8,7 +8,7 @@ import {
   isWeekDayInRange,
   startOfWeek,
 } from '../../utils/date'
-import { ScheduleCreateDto, ScheduleDto } from './schedule.dto'
+import { CreateScheduleDto, ScheduleDto } from './schedule.dto'
 import { WeekTemplateDto } from '../week-template/week-template.dto'
 import { ReplaceDto } from '../replace/replace.dto'
 
@@ -106,14 +106,23 @@ export class ScheduleService {
   }
 
   private applyReplaces(week: WeekTemplateDto, replaces: ReplaceDto[]) {
+    const lessonsByDayAndSlot = week.days.map(day => {
+      const map = new Map<number, (typeof day.lessons)[number]>()
+      for (const lesson of day.lessons) {
+        map.set(lesson.slotNumber, lesson)
+      }
+      return map
+    })
+
     for (const replace of replaces) {
       const dayIndex = getWeekDayIndex(replace.date)
       const day = week.days[dayIndex]
       if (!day) continue
 
-      const lesson = day.lessons.find(
-        l => l.slotNumber === replace.slotNumber,
-      )
+      const lessonsBySlot = lessonsByDayAndSlot[dayIndex]
+      if (!lessonsBySlot) continue
+
+      const lesson = lessonsBySlot.get(replace.slotNumber)
 
       if (!lesson) continue
 
@@ -124,7 +133,7 @@ export class ScheduleService {
     }
   }
 
-  async create(dto: ScheduleCreateDto) {
+  async create(dto: CreateScheduleDto) {
     try {
       return await this.prisma.schedule.create({
         data: {

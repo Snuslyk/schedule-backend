@@ -10,7 +10,7 @@ export class ReplaceDto {
   isAvailable: boolean
 }
 
-export class ReplaceCreateDto {
+export class CreateReplaceDto {
   @IsDate()
   date: Date
 
