@@ -101,6 +101,15 @@ export class WeekTemplateService {
     return plainToInstance(WeekTemplateDto, weekTemplate)
   }
 
+  async createMany(dtos: CreateWeekTemplateDto[], groupName: string) {
+    const results: WeekTemplateDto[] = []
+    for (const dto of dtos) {
+      const created = await this.create(dto, groupName)
+      results.push(created)
+    }
+    return results
+  }
+
   async deleteById(id: number) {
     try {
       await this.prisma.weekTemplate.delete({ where: { id: id } })

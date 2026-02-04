@@ -11,6 +11,11 @@ export class WeekTemplateController {
     return this.weekTemplateService.create(dto, group)
   }
 
+  @Post(':name/bulk')
+  createMany(@Body() dtos: CreateWeekTemplateDto[], @Param('name') group: string) {
+    return this.weekTemplateService.createMany(dtos, group)
+  }
+
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteById(@Param('id', ParseIntPipe) id: number) {

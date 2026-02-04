@@ -15,4 +15,11 @@ export class SubjectService {
       data: dto
     })
   }
+
+  createMany(dtos: CreateSubjectDto[]) {
+    return this.prisma.subject.createMany({
+      data: dtos,
+      skipDuplicates: false,
+    })
+  }
 }

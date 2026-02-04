@@ -21,6 +21,11 @@ export class GroupController {
     return this.groupService.create(dto)
   }
 
+  @Post('bulk')
+  createMany(@Body() dtos: CreateGroupDto[]) {
+    return this.groupService.createMany(dtos)
+  }
+
   @Delete('id/:id')
   @HttpCode(204)
   async deleteById(@Param('id', ParseIntPipe) id: number) {

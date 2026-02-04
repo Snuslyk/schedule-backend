@@ -10,4 +10,9 @@ export class ReplaceController {
   create(@Body() dto: CreateReplaceDto, @Param('group') group: string) {
     return this.replaceService.create(dto, group)
   }
+
+  @Post(':group/bulk')
+  createMany(@Body() dtos: CreateReplaceDto[], @Param('group') group: string) {
+    return this.replaceService.createMany(dtos, group)
+  }
 }

@@ -42,4 +42,42 @@ export class ReplaceService {
     });
   }
 
+  async createMany(dtos: CreateReplaceDto[], groupName: string) {
+    const group = await this.prisma.group.findUnique({
+      where: { name: groupName },
+      select: {
+        schedule: {
+          select: { id: true }
+        }
+      }
+    })
+
+    if (!group) {
+      throw new BadRequestException(
+        `There is no group with name ${groupName}!`,
+      );
+    }
+
+    if (!group.schedule) {
+      throw new BadRequestException(
+        `There is no schedule with group name ${groupName}!`,
+      );
+    }
+
+    const scheduleId = group.schedule!.id
+
+    return this.prisma.replace.createMany({
+      data: dtos.map(dto => ({
+        date: dto.date,
+        slotNumber: dto.slotNumber,
+        scheduleId: scheduleId,
+        classroom: dto.classroom,
+        teacherId: dto.teacherId,
+        isAvailable: dto.isAvailable,
+        subjectId: dto.subjectId
+      })),
+      skipDuplicates: false,
+    })
+  }
+
 }

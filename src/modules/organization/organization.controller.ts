@@ -8,6 +8,11 @@ export class OrganizationController {
 
   @Post()
   create(@Body() data: CreateOrganizationDto) {
+    return this.organizationService.create(data)
+  }
 
+  @Post('bulk')
+  createMany(@Body() data: CreateOrganizationDto[]) {
+    return this.organizationService.createMany(data)
   }
 }

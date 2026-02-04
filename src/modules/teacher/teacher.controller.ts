@@ -11,6 +11,11 @@ export class TeacherController {
     return this.teacherService.create(createTeacherDto);
   }
 
+  @Post('bulk')
+  createMany(@Body() createTeacherDtos: CreateTeacherDto[]) {
+    return this.teacherService.createMany(createTeacherDtos)
+  }
+
   @Get()
   findAll() {
     return this.teacherService.findAll();

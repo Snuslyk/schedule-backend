@@ -11,6 +11,13 @@ export class TeacherService {
     return this.prisma.teacher.create({ data: dto })
   }
 
+  createMany(dtos: CreateTeacherDto[]) {
+    return this.prisma.teacher.createMany({
+      data: dtos,
+      skipDuplicates: false,
+    })
+  }
+
   findAll() {
     return `This action returns all teacher`;
   }

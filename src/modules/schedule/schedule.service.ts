@@ -19,17 +19,22 @@ export class ScheduleService {
   }
 
   async create(dto: CreateScheduleDto) {
+    return this.createMany([dto])
+  }
+
+  async createMany(dtos: CreateScheduleDto[]) {
     try {
-      return await this.prisma.schedule.create({
-        data: {
+      return await this.prisma.schedule.createMany({
+        data: dtos.map(dto => ({
           groupId: dto.groupId,
           start: dto.start,
           end: dto.end,
-        },
+        })),
+        skipDuplicates: false,
       })
     } catch (e) {
       if (e.code === 'P2003') {
-        throw new NotFoundException(`Group with id ${dto.groupId} not found`)
+        throw new NotFoundException('One or more groups not found')
       }
       throw e
     }

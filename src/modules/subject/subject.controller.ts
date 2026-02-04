@@ -30,4 +30,10 @@ export class SubjectController {
   create(@Body() dto: CreateSubjectDto) {
     return this.subjectService.create(dto)
   }
+
+  @Post('bulk')
+  //@UseGuards(ConceptionGuard)
+  createMany(@Body() dtos: CreateSubjectDto[]) {
+    return this.subjectService.createMany(dtos)
+  }
 }

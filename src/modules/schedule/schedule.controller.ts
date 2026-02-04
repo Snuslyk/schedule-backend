@@ -22,4 +22,9 @@ export class ScheduleController {
   create(@Body() dto: CreateScheduleDto) {
     return this.scheduleService.create(dto)
   }
+
+  @Post('bulk')
+  createMany(@Body() dtos: CreateScheduleDto[]) {
+    return this.scheduleService.createMany(dtos)
+  }
 }

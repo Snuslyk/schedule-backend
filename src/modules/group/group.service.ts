@@ -42,6 +42,22 @@ export class GroupService {
     }
   }
 
+  async createMany(dtos: CreateGroupDto[]) {
+    try {
+      return await this.prisma.group.createMany({
+        data: dtos.map(dto => ({
+          name: dto.name,
+        })),
+        skipDuplicates: false,
+      })
+    } catch (e) {
+      if (e.code === 'P2002') {
+        throw new ConflictException('One or more groups already exist')
+      }
+      throw e
+    }
+  }
+
   async deleteById(id: number) {
     try {
       await this.prisma.group.delete({ where: { id: id } })

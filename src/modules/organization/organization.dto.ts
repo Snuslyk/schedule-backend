@@ -3,12 +3,12 @@ import { IsNumber, IsString } from 'class-validator'
 export class OrganizationDto {
   id: number
   name: string
-  number: number
+  shortName: string
 }
 
 export class CreateOrganizationDto {
   @IsString()
   name: string
   @IsNumber()
-  number: number
+  shortName: string
 }
