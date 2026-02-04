@@ -1,5 +1,5 @@
 import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common'
-import { OwnerService } from './owner.service';
+import { OwnerService } from './owner.service'
 
 @Controller('owner')
 export class OwnerController {
@@ -7,7 +7,7 @@ export class OwnerController {
 
   @Get(':name')
   findByName(@Param('name') name: string, @Query('quantity', ParseIntPipe) quantity: number) {
-    return this.ownerService.findByName(name, quantity);
+    return this.ownerService.findByName(name, quantity)
   }
 
 }

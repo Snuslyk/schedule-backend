@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { Injectable } from '@nestjs/common'
+import { PrismaService } from '../../prisma/prisma.service'
 
 @Injectable()
 export class OwnerService {
@@ -10,13 +10,13 @@ export class OwnerService {
       where: { name: { startsWith: name, mode: 'insensitive' } },
       take: quantity,
       select: { name: true },
-    });
+    })
     const teachers: { name: string }[] = await this.prisma.teacher.findMany({
       where: { name: { startsWith: name, mode: 'insensitive' } },
       take: quantity,
       select: { name: true },
-    });
+    })
 
-    return groups.concat(teachers);
+    return groups.concat(teachers)
   }
 }
