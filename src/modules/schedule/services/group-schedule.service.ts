@@ -68,6 +68,10 @@ export class GroupScheduleService {
       where: { groupId },
       include: {
         replaces: {
+          include: {
+            teacher: { select: { name: true } },
+            subject: { select: { name: true } },
+          },
           omit: { id: true, scheduleId: true },
         },
         weekTemplate: {
@@ -79,8 +83,8 @@ export class GroupScheduleService {
                 lessons: {
                   omit: { id: true, dayId: true, teacherId: true, subjectId: true },
                   include: {
-                    teacher: { omit: { id: true } },
-                    subject: { omit: { id: true } }
+                    teacher: { select: { name: true } },
+                    subject: { select: { name: true } }
                   }
                 },
                 slots: { omit: { id: true, dayId: true } },
@@ -168,8 +172,6 @@ export class GroupScheduleService {
 
       lesson.classroom = replace.classroom
       lesson.isAvailable = replace.isAvailable
-      lesson.teacherId = replace.teacherId
-      lesson.subjectId = replace.subjectId
       lesson.teacher.name = replace.teacher.name
       lesson.subject.name = replace.subject.name
     }
