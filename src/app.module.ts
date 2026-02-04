@@ -13,6 +13,7 @@ import { DayModule } from './modules/day/day.module';
 import { LessonModule } from './modules/lesson/lesson.module';
 import { TeacherModule } from './modules/teacher/teacher.module';
 import { ReplaceModule } from './modules/replace/replace.module';
+import { OwnerModule } from './modules/owner/owner.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ReplaceModule } from './modules/replace/replace.module';
     LessonModule,
     TeacherModule,
     ReplaceModule,
+    OwnerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

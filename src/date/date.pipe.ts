@@ -7,6 +7,6 @@ export class DatePipe implements PipeTransform {
     if (isNaN(date.getTime())) {
       throw new BadRequestException('Invalid date')
     }
-    return value;
+    return date;
   }
 }

@@ -132,5 +132,6 @@ model Teacher {
   replaces Replace[]
   subjects Subject[] @relation
 
+  @@index([name])
   @@map("teacher")
 }

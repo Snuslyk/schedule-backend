@@ -79,12 +79,8 @@ export class GroupScheduleService {
                 lessons: {
                   omit: { id: true, dayId: true, teacherId: true, subjectId: true },
                   include: {
-                    teacher: {
-                      omit: { id: true }
-                    },
-                    subject: {
-                      omit: { id: true }
-                    } 
+                    teacher: { omit: { id: true } },
+                    subject: { omit: { id: true } }
                   }
                 },
                 slots: { omit: { id: true, dayId: true } },
