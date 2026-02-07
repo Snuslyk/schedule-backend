@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: schedule-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1534
+      POSTGRES_DB: schedule
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: .
+    container_name: schedule-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${PORT}:4242"
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
