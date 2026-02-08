@@ -17,6 +17,16 @@ import { TeacherDto } from "../../teacher/teacher.dto"
 
 type LessonWithGroup = LessonDto & { groupName: string }
 
+type DayItem = {
+  dayOfWeek: number
+  finalLesson: Omit<LessonDto, "day" | "id">
+  groupName: string
+  originalSlotNumber: number
+  slotLength: number
+  groupSlots: SlotDto[]
+  slotIndex: number
+}
+
 @Injectable()
 export class TeacherScheduleService {
   constructor(private readonly prisma: PrismaService) {}
@@ -118,81 +128,96 @@ export class TeacherScheduleService {
     start: Date,
   ) {
     const requestedParity = getWeekParity(start)
+    const byDay = this.collectLessonsByDay(lessons, requestedParity)
+    this.fillDayMapFromByDay(dayMap, byDay)
+  }
 
-    type DayItem = {
-      finalLesson: Omit<LessonDto, "day" | "id">
-      groupName: string
-      originalSlotNumber: number
-      slotLength: number
-      groupSlots: SlotDto[]
-      slotIndex: number
-    }
+  private isLessonOnNextWeek(
+    templateType: WeekType | undefined,
+    requestedParity: WeekType,
+  ): boolean {
+    return (
+      (templateType === WeekType.EVEN && requestedParity === WeekType.ODD) ||
+      (templateType === WeekType.ODD && requestedParity === WeekType.EVEN)
+    )
+  }
+
+  private collectLessonsByDay(
+    lessons: LessonDto[],
+    requestedParity: WeekType,
+  ): Map<number, DayItem[]> {
     const byDay = new Map<number, DayItem[]>()
 
     for (const lesson of lessons) {
-      const { day: groupDay, id: lessonId, ...finalLesson } = lesson
-      if (!groupDay) continue
+      const item = this.tryBuildDayItem(lesson, requestedParity)
+      if (!item) continue
 
-      const groupSlots = groupDay.slots ?? []
-      const groupLessons = groupDay.lessons ?? []
-      const groupWeekTemplate = groupDay.weekTemplate
-      const templateType = groupWeekTemplate?.type
-
-      const dayOfWeek = groupWeekTemplate?.days?.findIndex(
-        (d) => d.id === groupDay.id,
-      )
-      if (dayOfWeek == null || dayOfWeek < 0) continue
-
-      let isNextWeek = false
-
-      if (templateType === WeekType.EVEN && requestedParity === WeekType.ODD) {
-        isNextWeek = true
-      }
-
-      if (templateType === WeekType.ODD && requestedParity === WeekType.EVEN) {
-        isNextWeek = true
-      }
-
-      if (isNextWeek) continue
-
-      const slotIndex = groupLessons.findIndex((gl) => gl.id === lessonId)
-      const slotLength = lesson.slotLength ?? 1
-
-      for (let i = 0; i < slotLength; i++) {
-        const slot = groupSlots[slotIndex + i]
-        if (!slot) {
-          throw new NotFoundException(
-            `Slot for lesson ${lessonId} (day ${groupDay.id}) not found`,
-          )
-        }
-      }
-
-      const groupName = groupDay.weekTemplate?.schedule?.group?.name ?? ""
-      const originalSlotNumber = lesson.slotNumber ?? 0
-
-      const list = byDay.get(dayOfWeek) ?? []
-      list.push({
-        finalLesson,
-        groupName,
-        originalSlotNumber,
-        slotLength,
-        groupSlots,
-        slotIndex,
-      })
-      byDay.set(dayOfWeek, list)
+      const list = byDay.get(item.dayOfWeek) ?? []
+      list.push(item)
+      byDay.set(item.dayOfWeek, list)
     }
 
-    for (const [dayOfWeek, items] of byDay) {
-      items.sort((a, b) => a.originalSlotNumber - b.originalSlotNumber)
+    return byDay
+  }
 
-      let nextSlotNumber = 0
+  private tryBuildDayItem(
+    lesson: LessonDto,
+    requestedParity: WeekType,
+  ): DayItem | null {
+    const { day: groupDay, id: lessonId, ...finalLesson } = lesson
+    if (!groupDay) return null
+
+    const groupSlots = groupDay.slots ?? []
+    const groupLessons = groupDay.lessons ?? []
+    const templateType = groupDay.weekTemplate?.type
+
+    const dayOfWeek = groupDay.weekTemplate?.days?.findIndex(
+      (d) => d.id === groupDay.id,
+    )
+    if (dayOfWeek == null || dayOfWeek < 0) return null
+    if (this.isLessonOnNextWeek(templateType, requestedParity)) return null
+
+    const slotIndex = groupLessons.findIndex((gl) => gl.id === lessonId)
+    const slotLength = lesson.slotLength ?? 1
+
+    for (let i = 0; i < slotLength; i++) {
+      const slot = groupSlots[slotIndex + i]
+      if (!slot) {
+        throw new NotFoundException(
+          `Slot for lesson ${lessonId} (day ${groupDay.id}) not found`,
+        )
+      }
+    }
+
+    const groupName = groupDay.weekTemplate?.schedule?.group?.name ?? ""
+    const originalSlotNumber = lesson.slotNumber ?? 0
+
+    return {
+      dayOfWeek,
+      finalLesson,
+      groupName,
+      originalSlotNumber,
+      slotLength,
+      groupSlots,
+      slotIndex,
+    }
+  }
+
+  private fillDayMapFromByDay(
+    dayMap: Map<number, { slots: SlotDto[]; lessons: LessonWithGroup[] }>,
+    byDay: Map<number, DayItem[]>,
+  ) {
+    for (const [dayOfWeek, items] of byDay) {
+      const sorted = [...items].sort(
+        (a, b) => a.originalSlotNumber - b.originalSlotNumber,
+      )
       const entry = dayMap.get(dayOfWeek)
       if (!entry) continue
 
-      for (const item of items) {
+      let nextSlotNumber = 0
+      for (const item of sorted) {
         const { finalLesson, groupName, slotLength, groupSlots, slotIndex } =
           item
-
         for (let i = 0; i < slotLength; i++) {
           entry.slots.push(groupSlots[slotIndex + i])
         }
