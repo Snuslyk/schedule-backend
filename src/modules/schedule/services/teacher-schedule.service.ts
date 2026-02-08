@@ -214,7 +214,7 @@ export class TeacherScheduleService {
       const entry = dayMap.get(dayOfWeek)
       if (!entry) continue
 
-      let nextSlotNumber = 0
+      let nextSlotNumber = 1
       for (const item of sorted) {
         const { finalLesson, groupName, slotLength, groupSlots, slotIndex } =
           item
