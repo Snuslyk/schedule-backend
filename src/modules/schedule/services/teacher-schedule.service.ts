@@ -96,7 +96,7 @@ export class TeacherScheduleService {
     const requestedParity = getWeekParity(start)
 
     for (const lesson of lessons) {
-      const { day: lessonDay, teacher: _teacher, id: _lessonId, ...finalLesson } = lesson
+      const { day: lessonDay, id: lessonId, ...finalLesson } = lesson
       if (!lessonDay) continue
 
       const groupSlots = lessonDay.slots ?? []
@@ -119,7 +119,7 @@ export class TeacherScheduleService {
 
       if (isNextWeek) continue
 
-      const slotIndex = groupLessons.findIndex(gl => gl.id === lesson.id)
+      const slotIndex = groupLessons.findIndex(gl => gl.id === lessonId)
       const slot = groupSlots[slotIndex]
       const groupName = lessonDay.weekTemplate?.schedule?.group?.name ?? ''
 
