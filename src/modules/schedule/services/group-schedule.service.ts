@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
-import { PrismaService } from '../../../prisma/prisma.service'
+import { BadRequestException, Injectable } from "@nestjs/common"
+import { PrismaService } from "../../../prisma/prisma.service"
 import {
   getEndOfWeek,
   getWeekDayIndex,
@@ -7,19 +7,23 @@ import {
   isDateInRange,
   isWeekDayInRange,
   startOfWeek,
-} from '../../../utils/date'
-import { ScheduleDto } from '../schedule.dto'
-import { WeekTemplateDto } from '../../week-template/week-template.dto'
-import { ReplaceDto } from '../../replace/replace.dto'
-import { GroupDto } from '../../group/group.dto'
-import { WeekType } from '../../../../generated/prisma/enums'
-import { DayDto } from '../../day/day.dto'
+} from "../../../utils/date"
+import { ScheduleDto } from "../schedule.dto"
+import { WeekTemplateDto } from "../../week-template/week-template.dto"
+import { ReplaceDto } from "../../replace/replace.dto"
+import { GroupDto } from "../../group/group.dto"
+import { WeekType } from "../../../../generated/prisma/enums"
+import { DayDto } from "../../day/day.dto"
 
 @Injectable()
 export class GroupScheduleService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getGroupDay(date: Date, groupName: string, mode: 'parity' | 'other'): Promise<DayDto> {
+  async getGroupDay(
+    date: Date,
+    groupName: string,
+    mode: "parity" | "other",
+  ): Promise<DayDto> {
     const week = await this.getGroupWeek(date, groupName, mode)
     const dayIndex = getWeekDayIndex(date)
     const day = week.days![dayIndex]
@@ -30,15 +34,19 @@ export class GroupScheduleService {
   async getGroupWeek(
     dayOfWeek: Date,
     groupName: string,
-    mode: 'parity' | 'other',
+    mode: "parity" | "other",
   ) {
     const startOfWeekDate = startOfWeek(dayOfWeek)
 
     const group: GroupDto = await this.getGroup(groupName)
-    const schedule: ScheduleDto = await this.getSchedule(group.id!, groupName, startOfWeekDate)
+    const schedule: ScheduleDto = await this.getSchedule(
+      group.id!,
+      groupName,
+      startOfWeekDate,
+    )
 
     const week =
-      mode === 'parity'
+      mode === "parity"
         ? this.getParityWeekTemplate(schedule, startOfWeekDate)
         : this.getOtherWeekTemplate(schedule)
 
@@ -57,9 +65,7 @@ export class GroupScheduleService {
     })
 
     if (!group) {
-      throw new BadRequestException(
-        `There is no group with name ${groupName}!`,
-      )
+      throw new BadRequestException(`There is no group with name ${groupName}!`)
     }
 
     return group
@@ -78,9 +84,9 @@ export class GroupScheduleService {
           where: {
             date: {
               gte: start,
-              lte: getEndOfWeek(start)
-            }
-          }
+              lte: getEndOfWeek(start),
+            },
+          },
         },
         weekTemplate: {
           omit: { id: true, scheduleId: true },
@@ -89,11 +95,16 @@ export class GroupScheduleService {
               omit: { id: true, weekTemplateId: true },
               include: {
                 lessons: {
-                  omit: { id: true, dayId: true, teacherId: true, subjectId: true },
+                  omit: {
+                    id: true,
+                    dayId: true,
+                    teacherId: true,
+                    subjectId: true,
+                  },
                   include: {
                     teacher: { select: { name: true } },
-                    subject: { select: { name: true } }
-                  }
+                    subject: { select: { name: true } },
+                  },
                 },
                 slots: { omit: { id: true, dayId: true } },
               },
@@ -114,7 +125,7 @@ export class GroupScheduleService {
 
   private getParityWeekTemplate(schedule: ScheduleDto, start: Date) {
     const weekParity = getWeekParity(start)
-    const week = schedule.weekTemplate!.find(w => w.type === weekParity)
+    const week = schedule.weekTemplate!.find((w) => w.type === weekParity)
 
     if (!week) {
       throw new BadRequestException(
@@ -126,7 +137,7 @@ export class GroupScheduleService {
   }
 
   private getOtherWeekTemplate(schedule: ScheduleDto) {
-    const week = schedule.weekTemplate!.find(w => w.type === WeekType.OTHER)
+    const week = schedule.weekTemplate!.find((w) => w.type === WeekType.OTHER)
 
     if (!week) {
       throw new BadRequestException(
@@ -150,12 +161,13 @@ export class GroupScheduleService {
   }
 
   private getWeekReplaces(schedule: ScheduleDto) {
-    return schedule.replaces!.filter(
-      r => isDateInRange(r.date, schedule.start!, schedule.end!))
+    return schedule.replaces!.filter((r) =>
+      isDateInRange(r.date, schedule.start!, schedule.end!),
+    )
   }
 
   private applyReplaces(week: WeekTemplateDto, replaces: ReplaceDto[]) {
-    const lessonsByDayAndSlot = week.days!.map(day => {
+    const lessonsByDayAndSlot = week.days!.map((day) => {
       const map = new Map<number, NonNullable<typeof day.lessons>[number]>()
       for (const lesson of day.lessons!) {
         map.set(lesson.slotNumber!, lesson)
@@ -182,4 +194,3 @@ export class GroupScheduleService {
     }
   }
 }
-

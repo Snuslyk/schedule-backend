@@ -1,33 +1,41 @@
-import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe } from '@nestjs/common'
-import { TeacherService } from './teacher.service';
-import { CreateTeacherDto } from './teacher.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  ParseIntPipe,
+} from "@nestjs/common"
+import { TeacherService } from "./teacher.service"
+import { CreateTeacherDto } from "./teacher.dto"
 
-@Controller('teacher')
+@Controller("teacher")
 export class TeacherController {
   constructor(private readonly teacherService: TeacherService) {}
 
   @Post()
   create(@Body() createTeacherDto: CreateTeacherDto) {
-    return this.teacherService.create(createTeacherDto);
+    return this.teacherService.create(createTeacherDto)
   }
 
-  @Post('bulk')
+  @Post("bulk")
   createMany(@Body() createTeacherDtos: CreateTeacherDto[]) {
     return this.teacherService.createMany(createTeacherDtos)
   }
 
   @Get()
   findAll() {
-    return this.teacherService.findAll();
+    return this.teacherService.findAll()
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.teacherService.findOne(id);
+  @Get(":id")
+  findOne(@Param("id", ParseIntPipe) id: number) {
+    return this.teacherService.findOne(id)
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.teacherService.remove(+id);
+  @Delete(":id")
+  remove(@Param("id") id: string) {
+    return this.teacherService.remove(+id)
   }
 }

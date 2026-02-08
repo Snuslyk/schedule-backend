@@ -1,4 +1,4 @@
-import { IsNumber } from 'class-validator';
+import { IsNumber } from "class-validator"
 
 export class SlotDto {
   id?: number
@@ -8,7 +8,6 @@ export class SlotDto {
 }
 
 export class CreateSlotDto {
-
   @IsNumber()
   start: number
 

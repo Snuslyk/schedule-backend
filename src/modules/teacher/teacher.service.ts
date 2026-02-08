@@ -1,11 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { CreateTeacherDto } from './teacher.dto';
-import { PrismaService } from '../../prisma/prisma.service'
+import { Injectable } from "@nestjs/common"
+import { CreateTeacherDto } from "./teacher.dto"
+import { PrismaService } from "../../prisma/prisma.service"
 
 @Injectable()
 export class TeacherService {
-  constructor(private readonly prisma: PrismaService) {
-  }
+  constructor(private readonly prisma: PrismaService) {}
 
   create(dto: CreateTeacherDto) {
     return this.prisma.teacher.create({ data: dto })
@@ -19,7 +18,7 @@ export class TeacherService {
   }
 
   findAll() {
-    return `This action returns all teacher`;
+    return `This action returns all teacher`
   }
 
   findOne(id: number) {
@@ -27,6 +26,6 @@ export class TeacherService {
   }
 
   remove(id: number) {
-    return `This action removes a #${id} teacher`;
+    return `This action removes a #${id} teacher`
   }
 }

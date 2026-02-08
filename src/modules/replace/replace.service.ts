@@ -1,32 +1,29 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
-import { PrismaService } from '../../prisma/prisma.service'
-import { CreateReplaceDto } from './replace.dto'
+import { BadRequestException, Injectable } from "@nestjs/common"
+import { PrismaService } from "../../prisma/prisma.service"
+import { CreateReplaceDto } from "./replace.dto"
 
 @Injectable()
 export class ReplaceService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(dto: CreateReplaceDto, groupName: string) {
-
     const group = await this.prisma.group.findUnique({
       where: { name: groupName },
       select: {
         schedule: {
-          select: { id: true }
-        }
-      }
+          select: { id: true },
+        },
+      },
     })
 
     if (!group) {
-      throw new BadRequestException(
-        `There is no group with name ${groupName}!`,
-      );
+      throw new BadRequestException(`There is no group with name ${groupName}!`)
     }
 
     if (!group.schedule) {
       throw new BadRequestException(
         `There is no schedule with group name ${groupName}!`,
-      );
+      )
     }
 
     return this.prisma.replace.create({
@@ -37,9 +34,9 @@ export class ReplaceService {
         classroom: dto.classroom,
         teacherId: dto.teacherId,
         isAvailable: dto.isAvailable,
-        subjectId: dto.subjectId
+        subjectId: dto.subjectId,
       },
-    });
+    })
   }
 
   async createMany(dtos: CreateReplaceDto[], groupName: string) {
@@ -47,37 +44,34 @@ export class ReplaceService {
       where: { name: groupName },
       select: {
         schedule: {
-          select: { id: true }
-        }
-      }
+          select: { id: true },
+        },
+      },
     })
 
     if (!group) {
-      throw new BadRequestException(
-        `There is no group with name ${groupName}!`,
-      );
+      throw new BadRequestException(`There is no group with name ${groupName}!`)
     }
 
     if (!group.schedule) {
       throw new BadRequestException(
         `There is no schedule with group name ${groupName}!`,
-      );
+      )
     }
 
-    const scheduleId = group.schedule!.id
+    const scheduleId = group.schedule.id
 
     return this.prisma.replace.createMany({
-      data: dtos.map(dto => ({
+      data: dtos.map((dto) => ({
         date: dto.date,
         slotNumber: dto.slotNumber,
         scheduleId: scheduleId,
         classroom: dto.classroom,
         teacherId: dto.teacherId,
         isAvailable: dto.isAvailable,
-        subjectId: dto.subjectId
+        subjectId: dto.subjectId,
       })),
       skipDuplicates: false,
     })
   }
-
 }

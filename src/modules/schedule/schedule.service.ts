@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
-import { PrismaService } from '../../prisma/prisma.service'
-import { CreateScheduleDto } from './schedule.dto'
-import { GroupScheduleService } from './services/group-schedule.service'
-import { TeacherScheduleService } from './services/teacher-schedule.service'
+import { Injectable, NotFoundException } from "@nestjs/common"
+import { PrismaService } from "../../prisma/prisma.service"
+import { CreateScheduleDto } from "./schedule.dto"
+import { GroupScheduleService } from "./services/group-schedule.service"
+import { TeacherScheduleService } from "./services/teacher-schedule.service"
 
 @Injectable()
 export class ScheduleService {
@@ -12,11 +12,15 @@ export class ScheduleService {
     private readonly teacherSchedule: TeacherScheduleService,
   ) {}
 
-  async getGroupWeek(weekDate: Date, groupName: string, mode: 'parity' | 'other') {
+  async getGroupWeek(
+    weekDate: Date,
+    groupName: string,
+    mode: "parity" | "other",
+  ) {
     return this.groupSchedule.getGroupWeek(weekDate, groupName, mode)
   }
 
-  async getGroupDay(date: Date, groupName: string, mode: 'parity' | 'other') {
+  async getGroupDay(date: Date, groupName: string, mode: "parity" | "other") {
     return this.groupSchedule.getGroupDay(date, groupName, mode)
   }
 
@@ -35,7 +39,7 @@ export class ScheduleService {
   async createMany(dtos: CreateScheduleDto[]) {
     try {
       return await this.prisma.schedule.createMany({
-        data: dtos.map(dto => ({
+        data: dtos.map((dto) => ({
           groupId: dto.groupId,
           start: dto.start,
           end: dto.end,
@@ -43,8 +47,8 @@ export class ScheduleService {
         skipDuplicates: false,
       })
     } catch (e) {
-      if (e.code === 'P2003') {
-        throw new NotFoundException('One or more groups not found')
+      if (e.code === "P2003") {
+        throw new NotFoundException("One or more groups not found")
       }
       throw e
     }

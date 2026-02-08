@@ -1,15 +1,15 @@
-import { IsString } from 'class-validator'
+import { IsString } from "class-validator"
 
 export class GroupDto {
-  id?: number;
-  name?: string;
+  id?: number
+  name?: string
 
   //schedule?: ScheduleDto | null;
 }
 
 export class CreateGroupDto {
   @IsString()
-  name: string;
+  name: string
 
   //@IsOptional()
   //@ValidateNested()

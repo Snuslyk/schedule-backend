@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common'
-import { PrismaService } from '../../prisma/prisma.service'
-import { CreateSubjectDto } from './subject.dto'
+import { Injectable } from "@nestjs/common"
+import { PrismaService } from "../../prisma/prisma.service"
+import { CreateSubjectDto } from "./subject.dto"
 
 @Injectable()
 export class SubjectService {
@@ -12,7 +12,7 @@ export class SubjectService {
 
   create(dto: CreateSubjectDto) {
     return this.prisma.subject.create({
-      data: dto
+      data: dto,
     })
   }
 

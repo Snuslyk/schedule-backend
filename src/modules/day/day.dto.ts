@@ -1,8 +1,8 @@
-import { IsArray, ValidateNested } from 'class-validator'
-import { CreateLessonDto, LessonDto } from '../lesson/lesson.dto'
-import { CreateSlotDto, SlotDto } from '../slot/slot.dto'
-import { Type } from 'class-transformer'
-import { WeekTemplateDto } from '../week-template/week-template.dto'
+import { IsArray, ValidateNested } from "class-validator"
+import { CreateLessonDto, LessonDto } from "../lesson/lesson.dto"
+import { CreateSlotDto, SlotDto } from "../slot/slot.dto"
+import { Type } from "class-transformer"
+import { WeekTemplateDto } from "../week-template/week-template.dto"
 
 export class DayDto {
   id?: number
@@ -12,7 +12,6 @@ export class DayDto {
 }
 
 export class CreateDayDto {
-
   //@IsNumber()
   //weekTemplateId: number
 
@@ -25,5 +24,4 @@ export class CreateDayDto {
   @ValidateNested({ each: true })
   @Type(() => CreateSlotDto)
   slots: CreateSlotDto[] = []
-
 }

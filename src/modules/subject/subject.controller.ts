@@ -6,21 +6,21 @@ import {
   Query,
   UseGuards,
   UseInterceptors,
-} from '@nestjs/common'
-import { SubjectService } from './subject.service'
-import { ConceptionPipe } from '../../conception/conception.pipe'
-import { ConceptionGuard } from '../../conception/conception.guard'
-import { ConceptionInterceptor } from '../../conception/conception.interceptor'
-import { CreateSubjectDto } from './subject.dto'
+} from "@nestjs/common"
+import { SubjectService } from "./subject.service"
+import { ConceptionPipe } from "../../conception/conception.pipe"
+import { ConceptionGuard } from "../../conception/conception.guard"
+import { ConceptionInterceptor } from "../../conception/conception.interceptor"
+import { CreateSubjectDto } from "./subject.dto"
 
-@Controller('subject')
+@Controller("subject")
 @UseInterceptors(ConceptionInterceptor)
 export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}
 
   @Get()
   @UseGuards(ConceptionGuard)
-  findAll(@Query('pageNumber', ConceptionPipe) pageNumber: number) {
+  findAll(@Query("pageNumber", ConceptionPipe) pageNumber: number) {
     console.log(pageNumber)
     return this.subjectService.findAll()
   }
@@ -31,7 +31,7 @@ export class SubjectController {
     return this.subjectService.create(dto)
   }
 
-  @Post('bulk')
+  @Post("bulk")
   //@UseGuards(ConceptionGuard)
   createMany(@Body() dtos: CreateSubjectDto[]) {
     return this.subjectService.createMany(dtos)

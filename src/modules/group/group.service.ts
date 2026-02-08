@@ -1,6 +1,10 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
-import { PrismaService } from '../../prisma/prisma.service'
-import { CreateGroupDto, GroupDto } from './group.dto'
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common"
+import { PrismaService } from "../../prisma/prisma.service"
+import { CreateGroupDto, GroupDto } from "./group.dto"
 
 @Injectable()
 export class GroupService {
@@ -18,7 +22,7 @@ export class GroupService {
 
   async getByName(name: string) {
     const group: GroupDto | null = await this.prisma.group.findUnique({
-      where: { name: name }
+      where: { name: name },
     })
 
     if (!group) throw new NotFoundException(`Group with id ${name} not found`)
@@ -31,12 +35,14 @@ export class GroupService {
       return await this.prisma.group.create({
         data: {
           name: dto.name,
-          schedule: undefined
-        }
+          schedule: undefined,
+        },
       })
     } catch (e) {
-      if (e.code === 'P2002') {
-        throw new ConflictException(`Group with name ${dto.name} already exists`)
+      if (e.code === "P2002") {
+        throw new ConflictException(
+          `Group with name ${dto.name} already exists`,
+        )
       }
       throw e
     }
@@ -45,14 +51,14 @@ export class GroupService {
   async createMany(dtos: CreateGroupDto[]) {
     try {
       return await this.prisma.group.createMany({
-        data: dtos.map(dto => ({
+        data: dtos.map((dto) => ({
           name: dto.name,
         })),
         skipDuplicates: false,
       })
     } catch (e) {
-      if (e.code === 'P2002') {
-        throw new ConflictException('One or more groups already exist')
+      if (e.code === "P2002") {
+        throw new ConflictException("One or more groups already exist")
       }
       throw e
     }
@@ -62,7 +68,7 @@ export class GroupService {
     try {
       await this.prisma.group.delete({ where: { id: id } })
     } catch (e) {
-      if (e.code === 'P2025') {
+      if (e.code === "P2025") {
         throw new NotFoundException(`Group with id ${id} not found`)
       }
       throw e
@@ -73,7 +79,7 @@ export class GroupService {
     try {
       await this.prisma.group.delete({ where: { name: name } })
     } catch (e) {
-      if (e.code === 'P2025') {
+      if (e.code === "P2025") {
         throw new NotFoundException(`Group with name ${name} not found`)
       }
       throw e

@@ -1,10 +1,10 @@
-import { IsString } from 'class-validator'
-import { LessonDto } from '../lesson/lesson.dto'
+import { IsString } from "class-validator"
+import { LessonDto } from "../lesson/lesson.dto"
 
 export class TeacherDto {
-  id?: number;
+  id?: number
   name: string
-  lessons?: LessonDto[];
+  lessons?: LessonDto[]
 }
 
 export class CreateTeacherDto {

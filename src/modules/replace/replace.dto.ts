@@ -1,4 +1,4 @@
-import { IsNumber, IsDate, IsString, IsBoolean } from 'class-validator'
+import { IsNumber, IsDate, IsString, IsBoolean } from "class-validator"
 
 export class ReplaceDto {
   id?: number

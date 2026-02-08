@@ -1,9 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
-import { PrismaService } from '../../prisma/prisma.service'
+import { BadRequestException, Injectable } from "@nestjs/common"
+import { PrismaService } from "../../prisma/prisma.service"
 
 export enum OwnerType {
-  GROUP = 'group',
-  TEACHER = 'teacher',
+  GROUP = "group",
+  TEACHER = "teacher",
 }
 
 export type Owner = {
@@ -18,9 +18,7 @@ export class OwnerService {
 
   async findByName(name: string, quantity: number): Promise<Owner[]> {
     if (quantity > 10) {
-      throw new BadRequestException(
-        'Quantity must be less than or equal to 10'
-      )
+      throw new BadRequestException("Quantity must be less than or equal to 10")
     }
 
     const trimmedName = name.trim()
@@ -46,31 +44,40 @@ export class OwnerService {
     ])
 
     // Добавляем тип к каждому объекту
-    const typedGroups = groups.map(g => ({ ...g, type: OwnerType.GROUP }))
-    const typedTeachers = teachers.map(t => ({ ...t, type: OwnerType.TEACHER }))
+    const typedGroups = groups.map((g) => ({ ...g, type: OwnerType.GROUP }))
+    const typedTeachers = teachers.map((t) => ({
+      ...t,
+      type: OwnerType.TEACHER,
+    }))
 
     return [...typedGroups, ...typedTeachers]
   }
 
-  private async findBySearchName(name: string, quantity: number): Promise<Owner[]> {
+  private async findBySearchName(
+    name: string,
+    quantity: number,
+  ): Promise<Owner[]> {
     const groups = await this.prisma.group.findMany({
-      where: { name: { contains: name, mode: 'insensitive' } },
+      where: { name: { contains: name, mode: "insensitive" } },
       take: quantity,
       select: { id: true, name: true },
     })
 
     const remaining = quantity - groups.length
-    const typedGroups = groups.map(g => ({ ...g, type: OwnerType.GROUP }))
+    const typedGroups = groups.map((g) => ({ ...g, type: OwnerType.GROUP }))
 
     if (remaining <= 0) return typedGroups
 
     const teachers = await this.prisma.teacher.findMany({
-      where: { name: { contains: name, mode: 'insensitive' } },
+      where: { name: { contains: name, mode: "insensitive" } },
       take: remaining,
       select: { id: true, name: true },
     })
 
-    const typedTeachers = teachers.map(t => ({ ...t, type: OwnerType.TEACHER }))
+    const typedTeachers = teachers.map((t) => ({
+      ...t,
+      type: OwnerType.TEACHER,
+    }))
 
     return [...typedGroups, ...typedTeachers]
   }

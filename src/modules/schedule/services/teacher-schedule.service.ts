@@ -1,11 +1,19 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
-import { PrismaService } from '../../../prisma/prisma.service'
-import { SlotDto } from '../../slot/slot.dto'
-import { LessonDto } from '../../lesson/lesson.dto'
-import { WeekType } from '../../../../generated/prisma/enums'
-import { getWeekDayIndex, getWeekParity, startOfWeek } from '../../../utils/date'
-import { DayDto } from '../../day/day.dto'
-import { TeacherDto } from '../../teacher/teacher.dto'
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common"
+import { PrismaService } from "../../../prisma/prisma.service"
+import { SlotDto } from "../../slot/slot.dto"
+import { LessonDto } from "../../lesson/lesson.dto"
+import { WeekType } from "../../../../generated/prisma/enums"
+import {
+  getWeekDayIndex,
+  getWeekParity,
+  startOfWeek,
+} from "../../../utils/date"
+import { DayDto } from "../../day/day.dto"
+import { TeacherDto } from "../../teacher/teacher.dto"
 
 type LessonWithGroup = LessonDto & { groupName: string }
 
@@ -23,9 +31,11 @@ export class TeacherScheduleService {
 
   async getTeacherWeek(teacherId: number, dayOfWeek: Date) {
     const startOfWeekDate = startOfWeek(dayOfWeek)
-    const teacher: TeacherDto | null = await this.fetchTeacherWithLessons(teacherId)
+    const teacher: TeacherDto | null =
+      await this.fetchTeacherWithLessons(teacherId)
 
-    if (!teacher) throw new BadRequestException(`Teacher with id ${teacherId} not found`)
+    if (!teacher)
+      throw new BadRequestException(`Teacher with id ${teacherId} not found`)
 
     const hasBothParities = this.hasEvenAndOddWeeks(teacher.lessons!)
 
@@ -33,7 +43,9 @@ export class TeacherScheduleService {
     this.populateDayMap(dayMap, teacher.lessons!, startOfWeekDate)
 
     const days: DayDto[] = this.dayMapToDays(dayMap)
-    const weekType = hasBothParities ? getWeekParity(startOfWeekDate) : WeekType.OTHER
+    const weekType = hasBothParities
+      ? getWeekParity(startOfWeekDate)
+      : WeekType.OTHER
     return { type: weekType, days }
   }
 
@@ -57,8 +69,8 @@ export class TeacherScheduleService {
                 slots: {
                   omit: {
                     id: true,
-                    dayId: true
-                  }
+                    dayId: true,
+                  },
                 },
                 lessons: { select: { id: true } },
                 weekTemplate: {
@@ -66,14 +78,14 @@ export class TeacherScheduleService {
                     id: true,
                     type: true,
                     days: { select: { id: true } },
-                    schedule: { select: { group: { select: { name: true } } } }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    schedule: { select: { group: { select: { name: true } } } },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     })
   }
 
@@ -90,7 +102,10 @@ export class TeacherScheduleService {
   }
 
   private initDayMap(length: number) {
-    const dayMap = new Map<number, { slots: SlotDto[]; lessons: LessonWithGroup[] }>()
+    const dayMap = new Map<
+      number,
+      { slots: SlotDto[]; lessons: LessonWithGroup[] }
+    >()
     for (let i = 0; i < length; i++) {
       dayMap.set(i, { slots: [], lessons: [] })
     }
@@ -100,7 +115,7 @@ export class TeacherScheduleService {
   private populateDayMap(
     dayMap: Map<number, { slots: SlotDto[]; lessons: LessonWithGroup[] }>,
     lessons: LessonDto[],
-    start: Date
+    start: Date,
   ) {
     const requestedParity = getWeekParity(start)
 
@@ -113,7 +128,9 @@ export class TeacherScheduleService {
       const groupWeekTemplate = lessonDay.weekTemplate
       const templateType = groupWeekTemplate?.type
 
-      const dayOfWeek = groupWeekTemplate?.days?.findIndex(d => d.id === lessonDay.id)
+      const dayOfWeek = groupWeekTemplate?.days?.findIndex(
+        (d) => d.id === lessonDay.id,
+      )
       if (dayOfWeek == null || dayOfWeek < 0) continue
 
       let isNextWeek = false
@@ -128,22 +145,29 @@ export class TeacherScheduleService {
 
       if (isNextWeek) continue
 
-      const slotIndex = groupLessons.findIndex(gl => gl.id === lessonId)
+      const slotIndex = groupLessons.findIndex((gl) => gl.id === lessonId)
       const slot = groupSlots[slotIndex]
-      const groupName = lessonDay.weekTemplate?.schedule?.group?.name ?? ''
+      const groupName = lessonDay.weekTemplate?.schedule?.group?.name ?? ""
 
       const entry = dayMap.get(dayOfWeek)
       if (!entry) continue
 
-      if (!slot) throw new NotFoundException(`Slot for lesson ${lesson.id} (day ${lessonDay.id}) not found`)
-      
+      if (!slot)
+        throw new NotFoundException(
+          `Slot for lesson ${lesson.id} (day ${lessonDay.id}) not found`,
+        )
+
       entry.slots.push(slot)
       entry.lessons.push({ ...finalLesson, groupName })
     }
   }
 
-  private dayMapToDays(dayMap: Map<number, { slots: SlotDto[]; lessons: LessonWithGroup[] }>) {
-    return Array.from(dayMap.values()).map(d => ({ slots: d.slots, lessons: d.lessons }))
+  private dayMapToDays(
+    dayMap: Map<number, { slots: SlotDto[]; lessons: LessonWithGroup[] }>,
+  ) {
+    return Array.from(dayMap.values()).map((d) => ({
+      slots: d.slots,
+      lessons: d.lessons,
+    }))
   }
-
 }
