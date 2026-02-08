@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../../../prisma/prisma.service'
 import { SlotDto } from '../../slot/slot.dto'
 import { LessonDto } from '../../lesson/lesson.dto'
@@ -45,7 +45,12 @@ export class TeacherScheduleService {
             day: {
               select: {
                 id: true,
-                slots: true,
+                slots: {
+                  omit: {
+                    id: true,
+                    dayId: true
+                  }
+                },
                 lessons: { select: { id: true } },
                 weekTemplate: {
                   select: {
@@ -121,10 +126,9 @@ export class TeacherScheduleService {
       const entry = dayMap.get(dayOfWeek)
       if (!entry) continue
 
-      if (slot) {
-        const { id: _slotId, dayId: _dayId, ...finalSlot } = slot
-        entry.slots.push(finalSlot)
-      }
+      if (!slot) throw new NotFoundException(`Slot for lesson ${lesson.id} (day ${lessonDay.id}) not found`)
+      
+      entry.slots.push(slot)
       entry.lessons.push({ ...finalLesson, groupName })
     }
   }
