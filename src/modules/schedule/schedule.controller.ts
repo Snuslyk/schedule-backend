@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common'
+import { Body, Controller, Get, ParseIntPipe, Post, Query } from '@nestjs/common'
 import { ScheduleService } from './schedule.service';
 import { DatePipe } from '../../date/date.pipe'
 import { CreateScheduleDto } from './schedule.dto'
@@ -16,6 +16,11 @@ export class ScheduleController {
   @Get('day/group')
   getParityGroupDay(@Query('date', DatePipe) date: Date, @Query('group') group: string, @Query('mode', ModePipe) mode: 'parity' | 'other') {
     return this.scheduleService.getGroupDay(date, group, mode)
+  }
+
+  @Get('week/teacher')
+  getTeacherWeek(@Query('date', DatePipe) date: Date, @Query('id', ParseIntPipe) id: number) {
+    return this.scheduleService.getTeacherWeek(id, date)
   }
 
   @Post()

@@ -4,6 +4,7 @@ export class SlotDto {
   id?: number
   start: number
   end: number
+  dayId?: number
 }
 
 export class CreateSlotDto {

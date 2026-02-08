@@ -1,9 +1,10 @@
 import { IsString } from 'class-validator'
+import { TeacherDto } from '../teacher/teacher.dto'
 
 export class SubjectDto {
-  id: number
+  id?: number
   name: string
-  teacher: string
+  teachers?: TeacherDto[]
 }
 
 export class CreateSubjectDto {

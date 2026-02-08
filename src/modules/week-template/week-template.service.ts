@@ -83,7 +83,7 @@ export class WeekTemplateService {
             }
           }
         }
-      });
+      })
     } catch (e) {
       if (e.code === 'P2003') {
         throw new NotFoundException(
@@ -95,7 +95,7 @@ export class WeekTemplateService {
           'Duplicate entry detected'
         )
       }
-      throw e;
+      throw e
     }
 
     return plainToInstance(WeekTemplateDto, weekTemplate)

@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { PrismaService } from '../../../prisma/prisma.service'
 import {
+  getEndOfWeek,
   getWeekDayIndex,
   getWeekParity,
   isDateInRange,
-  isSameWeek,
   isWeekDayInRange,
   startOfWeek,
 } from '../../../utils/date'
@@ -22,20 +22,21 @@ export class GroupScheduleService {
   async getGroupDay(date: Date, groupName: string, mode: 'parity' | 'other'): Promise<DayDto> {
     const week = await this.getGroupWeek(date, groupName, mode)
     const dayIndex = getWeekDayIndex(date)
-    const day = week.days[dayIndex]
+    const day = week.days![dayIndex]
 
     return day ?? { lessons: [], slots: [] }
   }
 
   async getGroupWeek(
-    today: Date,
+    dayOfWeek: Date,
     groupName: string,
     mode: 'parity' | 'other',
   ) {
-    const group: GroupDto = await this.getGroup(groupName)
-    const schedule: ScheduleDto = await this.getSchedule(group.id, groupName)
+    const startOfWeekDate = startOfWeek(dayOfWeek)
 
-    const startOfWeekDate = startOfWeek(today)
+    const group: GroupDto = await this.getGroup(groupName)
+    const schedule: ScheduleDto = await this.getSchedule(group.id!, groupName, startOfWeekDate)
+
     const week =
       mode === 'parity'
         ? this.getParityWeekTemplate(schedule, startOfWeekDate)
@@ -43,7 +44,8 @@ export class GroupScheduleService {
 
     this.applyScheduleRange(week, startOfWeekDate, schedule)
 
-    const replaces = this.getWeekReplaces(schedule, startOfWeekDate)
+    const replaces = this.getWeekReplaces(schedule)
+    console.log(replaces)
     this.applyReplaces(week, replaces)
 
     return week
@@ -63,7 +65,7 @@ export class GroupScheduleService {
     return group
   }
 
-  private async getSchedule(groupId: number, groupName: string) {
+  private async getSchedule(groupId: number, groupName: string, start: Date) {
     const schedule = await this.prisma.schedule.findUnique({
       where: { groupId },
       include: {
@@ -73,6 +75,12 @@ export class GroupScheduleService {
             subject: { select: { name: true } },
           },
           omit: { id: true, scheduleId: true },
+          where: {
+            date: {
+              gte: start,
+              lte: getEndOfWeek(start)
+            }
+          }
         },
         weekTemplate: {
           omit: { id: true, scheduleId: true },
@@ -106,7 +114,7 @@ export class GroupScheduleService {
 
   private getParityWeekTemplate(schedule: ScheduleDto, start: Date) {
     const weekParity = getWeekParity(start)
-    const week = schedule.weekTemplate.find(w => w.type === weekParity)
+    const week = schedule.weekTemplate!.find(w => w.type === weekParity)
 
     if (!week) {
       throw new BadRequestException(
@@ -118,7 +126,7 @@ export class GroupScheduleService {
   }
 
   private getOtherWeekTemplate(schedule: ScheduleDto) {
-    const week = schedule.weekTemplate.find(w => w.type === WeekType.OTHER)
+    const week = schedule.weekTemplate!.find(w => w.type === WeekType.OTHER)
 
     if (!week) {
       throw new BadRequestException(
@@ -134,33 +142,30 @@ export class GroupScheduleService {
     start: Date,
     schedule: ScheduleDto,
   ) {
-    week.days = week.days.map((day, index) =>
-      isWeekDayInRange(start, index, schedule.start, schedule.end)
+    week.days = week.days!.map((day, index) =>
+      isWeekDayInRange(start, index, schedule.start!, schedule.end!)
         ? day
         : { lessons: [], slots: [] },
     )
   }
 
-  private getWeekReplaces(schedule: ScheduleDto, start: Date) {
-    return schedule.replaces.filter(
-      r =>
-        isSameWeek(r.date, start) &&
-        isDateInRange(r.date, schedule.start, schedule.end),
-    )
+  private getWeekReplaces(schedule: ScheduleDto) {
+    return schedule.replaces!.filter(
+      r => isDateInRange(r.date, schedule.start!, schedule.end!))
   }
 
   private applyReplaces(week: WeekTemplateDto, replaces: ReplaceDto[]) {
-    const lessonsByDayAndSlot = week.days.map(day => {
-      const map = new Map<number, (typeof day.lessons)[number]>()
-      for (const lesson of day.lessons) {
-        map.set(lesson.slotNumber, lesson)
+    const lessonsByDayAndSlot = week.days!.map(day => {
+      const map = new Map<number, NonNullable<typeof day.lessons>[number]>()
+      for (const lesson of day.lessons!) {
+        map.set(lesson.slotNumber!, lesson)
       }
       return map
     })
 
     for (const replace of replaces) {
       const dayIndex = getWeekDayIndex(replace.date)
-      const day = week.days[dayIndex]
+      const day = week.days![dayIndex]
       if (!day) continue
 
       const lessonsBySlot = lessonsByDayAndSlot[dayIndex]
@@ -168,7 +173,7 @@ export class GroupScheduleService {
 
       const lesson = lessonsBySlot.get(replace.slotNumber)
 
-      if (!lesson) continue
+      if (!lesson || !lesson.teacher || !lesson.subject) continue
 
       lesson.classroom = replace.classroom
       lesson.isAvailable = replace.isAvailable

@@ -73,3 +73,10 @@ export function doesWeekIntersectRange(
 
   return weekStart <= rangeEnd && weekEnd >= rangeStart;
 }
+
+export function getEndOfWeek(startDate: Date): Date {
+  const endDate = new Date(startDate);
+  //const start = startOfWeek(startDate)
+  endDate.setDate(startDate.getDate() + 6);
+  return endDate;
+}

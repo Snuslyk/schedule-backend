@@ -2,12 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../../prisma/prisma.service'
 import { CreateScheduleDto } from './schedule.dto'
 import { GroupScheduleService } from './services/group-schedule.service'
+import { TeacherScheduleService } from './services/teacher-schedule.service'
 
 @Injectable()
 export class ScheduleService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly groupSchedule: GroupScheduleService,
+    private readonly teacherSchedule: TeacherScheduleService,
   ) {}
 
   async getGroupWeek(weekDate: Date, groupName: string, mode: 'parity' | 'other') {
@@ -16,6 +18,10 @@ export class ScheduleService {
 
   async getGroupDay(date: Date, groupName: string, mode: 'parity' | 'other') {
     return this.groupSchedule.getGroupDay(date, groupName, mode)
+  }
+
+  async getTeacherWeek(id: number, start: Date) {
+    return this.teacherSchedule.getTeacherWeek(id, start)
   }
 
   async create(dto: CreateScheduleDto) {
