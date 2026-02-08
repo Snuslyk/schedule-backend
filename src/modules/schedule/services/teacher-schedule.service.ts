@@ -177,7 +177,13 @@ export class TeacherScheduleService {
     if (dayOfWeek == null || dayOfWeek < 0) return null
     if (this.isLessonOnNextWeek(templateType, requestedParity)) return null
 
-    const slotIndex = groupLessons.findIndex((gl) => gl.id === lessonId)
+    const lessonIndex = groupLessons.findIndex((gl) => gl.id === lessonId)
+    if (lessonIndex < 0) return null
+
+    let slotIndex = 0
+    for (let i = 0; i < lessonIndex; i++) {
+      slotIndex += groupLessons[i].slotLength ?? 1
+    }
     const slotLength = lesson.slotLength ?? 1
 
     for (let i = 0; i < slotLength; i++) {
@@ -219,7 +225,7 @@ export class TeacherScheduleService {
         const { finalLesson, groupName, slotLength, groupSlots, slotIndex } =
           item
         for (let i = 0; i < slotLength; i++) {
-          entry.slots.push(groupSlots[slotIndex + 1 + i])
+          entry.slots.push(groupSlots[slotIndex + i])
         }
         entry.lessons.push({
           ...finalLesson,
