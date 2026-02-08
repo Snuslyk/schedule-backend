@@ -119,17 +119,27 @@ export class TeacherScheduleService {
   ) {
     const requestedParity = getWeekParity(start)
 
-    for (const lesson of lessons) {
-      const { day: lessonDay, id: lessonId, ...finalLesson } = lesson
-      if (!lessonDay) continue
+    type DayItem = {
+      finalLesson: Omit<LessonDto, "day" | "id">
+      groupName: string
+      originalSlotNumber: number
+      slotLength: number
+      groupSlots: SlotDto[]
+      slotIndex: number
+    }
+    const byDay = new Map<number, DayItem[]>()
 
-      const groupSlots = lessonDay.slots ?? []
-      const groupLessons = lessonDay.lessons ?? []
-      const groupWeekTemplate = lessonDay.weekTemplate
+    for (const lesson of lessons) {
+      const { day: groupDay, id: lessonId, ...finalLesson } = lesson
+      if (!groupDay) continue
+
+      const groupSlots = groupDay.slots ?? []
+      const groupLessons = groupDay.lessons ?? []
+      const groupWeekTemplate = groupDay.weekTemplate
       const templateType = groupWeekTemplate?.type
 
       const dayOfWeek = groupWeekTemplate?.days?.findIndex(
-        (d) => d.id === lessonDay.id,
+        (d) => d.id === groupDay.id,
       )
       if (dayOfWeek == null || dayOfWeek < 0) continue
 
@@ -146,19 +156,54 @@ export class TeacherScheduleService {
       if (isNextWeek) continue
 
       const slotIndex = groupLessons.findIndex((gl) => gl.id === lessonId)
-      const slot = groupSlots[slotIndex]
-      const groupName = lessonDay.weekTemplate?.schedule?.group?.name ?? ""
+      const slotLength = lesson.slotLength ?? 1
 
+      for (let i = 0; i < slotLength; i++) {
+        const slot = groupSlots[slotIndex + i]
+        if (!slot) {
+          throw new NotFoundException(
+            `Slot for lesson ${lessonId} (day ${groupDay.id}) not found`,
+          )
+        }
+      }
+
+      const groupName = groupDay.weekTemplate?.schedule?.group?.name ?? ""
+      const originalSlotNumber = lesson.slotNumber ?? 0
+
+      const list = byDay.get(dayOfWeek) ?? []
+      list.push({
+        finalLesson,
+        groupName,
+        originalSlotNumber,
+        slotLength,
+        groupSlots,
+        slotIndex,
+      })
+      byDay.set(dayOfWeek, list)
+    }
+
+    for (const [dayOfWeek, items] of byDay) {
+      items.sort((a, b) => a.originalSlotNumber - b.originalSlotNumber)
+
+      let nextSlotNumber = 0
       const entry = dayMap.get(dayOfWeek)
       if (!entry) continue
 
-      if (!slot)
-        throw new NotFoundException(
-          `Slot for lesson ${lesson.id} (day ${lessonDay.id}) not found`,
-        )
+      for (const item of items) {
+        const { finalLesson, groupName, slotLength, groupSlots, slotIndex } =
+          item
 
-      entry.slots.push(slot)
-      entry.lessons.push({ ...finalLesson, groupName })
+        for (let i = 0; i < slotLength; i++) {
+          entry.slots.push(groupSlots[slotIndex + i])
+        }
+        entry.lessons.push({
+          ...finalLesson,
+          groupName,
+          slotNumber: nextSlotNumber,
+          slotLength,
+        })
+        nextSlotNumber += slotLength
+      }
     }
   }
 
