@@ -23,6 +23,11 @@ export class ScheduleController {
     return this.scheduleService.getTeacherWeek(id, date)
   }
 
+  @Get('day/teacher')
+  getTeacherDay(@Query('date', DatePipe) date: Date, @Query('id', ParseIntPipe) id: number) {
+    return this.scheduleService.getTeacherDay(id, date)
+  }
+
   @Post()
   create(@Body() dto: CreateScheduleDto) {
     return this.scheduleService.create(dto)

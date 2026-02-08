@@ -24,6 +24,10 @@ export class ScheduleService {
     return this.teacherSchedule.getTeacherWeek(id, start)
   }
 
+  getTeacherDay(id: number, date: Date) {
+    return this.teacherSchedule.getTeacherDay(id, date)
+  }
+
   async create(dto: CreateScheduleDto) {
     return this.createMany([dto])
   }

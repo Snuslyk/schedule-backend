@@ -3,7 +3,7 @@ import { PrismaService } from '../../../prisma/prisma.service'
 import { SlotDto } from '../../slot/slot.dto'
 import { LessonDto } from '../../lesson/lesson.dto'
 import { WeekType } from '../../../../generated/prisma/enums'
-import { getWeekParity } from '../../../utils/date'
+import { getWeekDayIndex, getWeekParity, startOfWeek } from '../../../utils/date'
 import { DayDto } from '../../day/day.dto'
 import { TeacherDto } from '../../teacher/teacher.dto'
 
@@ -13,7 +13,16 @@ type LessonWithGroup = LessonDto & { groupName: string }
 export class TeacherScheduleService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getTeacherWeek(teacherId: number, start: Date) {
+  async getTeacherDay(teacherId: number, date: Date) {
+    const week = await this.getTeacherWeek(teacherId, date)
+    const dayIndex = getWeekDayIndex(date)
+    const day = week.days[dayIndex]
+
+    return day ?? { slots: [], lessons: [] }
+  }
+
+  async getTeacherWeek(teacherId: number, dayOfWeek: Date) {
+    const startOfWeekDate = startOfWeek(dayOfWeek)
     const teacher: TeacherDto | null = await this.fetchTeacherWithLessons(teacherId)
 
     if (!teacher) throw new BadRequestException(`Teacher with id ${teacherId} not found`)
@@ -21,10 +30,10 @@ export class TeacherScheduleService {
     const hasBothParities = this.hasEvenAndOddWeeks(teacher.lessons!)
 
     const dayMap = this.initDayMap(7)
-    this.populateDayMap(dayMap, teacher.lessons!, start)
+    this.populateDayMap(dayMap, teacher.lessons!, startOfWeekDate)
 
     const days: DayDto[] = this.dayMapToDays(dayMap)
-    const weekType = hasBothParities ? getWeekParity(start) : WeekType.OTHER
+    const weekType = hasBothParities ? getWeekParity(startOfWeekDate) : WeekType.OTHER
     return { weekType, days }
   }
 
