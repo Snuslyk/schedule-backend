@@ -6,6 +6,20 @@ model Organization {
   @@map("organizations")
 }
 
+model User {
+  id String @id @default(uuid())
+
+  email String @unique
+  password String
+
+  isAdmin Boolean @default(false)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("admin")
+}
+
 model Student {
   id   Int    @id @default(autoincrement())
   name String
