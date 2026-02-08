@@ -3,11 +3,11 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
+  HttpCode, HttpStatus,
   Param,
   ParseIntPipe,
   Post,
-} from "@nestjs/common"
+} from '@nestjs/common'
 import { GroupService } from "./group.service"
 import { CreateGroupDto } from "./group.dto"
 
@@ -26,11 +26,13 @@ export class GroupController {
   }
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   create(@Body() dto: CreateGroupDto) {
     return this.groupService.create(dto)
   }
 
   @Post("bulk")
+  @HttpCode(HttpStatus.CREATED)
   createMany(@Body() dtos: CreateGroupDto[]) {
     return this.groupService.createMany(dtos)
   }

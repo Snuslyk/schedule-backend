@@ -1,12 +1,12 @@
 import {
   Body,
   Controller,
-  Get,
+  Get, HttpCode, HttpStatus,
   Post,
   Query,
   UseGuards,
   UseInterceptors,
-} from "@nestjs/common"
+} from '@nestjs/common'
 import { SubjectService } from "./subject.service"
 import { ConceptionPipe } from "../../conception/conception.pipe"
 import { ConceptionGuard } from "../../conception/conception.guard"
@@ -26,12 +26,14 @@ export class SubjectController {
   }
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   //@UseGuards(ConceptionGuard)
   create(@Body() dto: CreateSubjectDto) {
     return this.subjectService.create(dto)
   }
 
   @Post("bulk")
+  @HttpCode(HttpStatus.CREATED)
   //@UseGuards(ConceptionGuard)
   createMany(@Body() dtos: CreateSubjectDto[]) {
     return this.subjectService.createMany(dtos)

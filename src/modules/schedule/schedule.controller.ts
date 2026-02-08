@@ -1,11 +1,11 @@
 import {
   Body,
   Controller,
-  Get,
+  Get, HttpCode, HttpStatus,
   ParseIntPipe,
   Post,
   Query,
-} from "@nestjs/common"
+} from '@nestjs/common'
 import { ScheduleService } from "./schedule.service"
 import { DatePipe } from "../../date/date.pipe"
 import { CreateScheduleDto } from "./schedule.dto"
@@ -50,11 +50,13 @@ export class ScheduleController {
   }
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   create(@Body() dto: CreateScheduleDto) {
     return this.scheduleService.create(dto)
   }
 
   @Post("bulk")
+  @HttpCode(HttpStatus.CREATED)
   createMany(@Body() dtos: CreateScheduleDto[]) {
     return this.scheduleService.createMany(dtos)
   }

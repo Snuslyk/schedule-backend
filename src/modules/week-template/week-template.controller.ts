@@ -16,11 +16,13 @@ export class WeekTemplateController {
   constructor(private readonly weekTemplateService: WeekTemplateService) {}
 
   @Post(":name")
+  @HttpCode(HttpStatus.CREATED)
   create(@Body() dto: CreateWeekTemplateDto, @Param("name") group: string) {
     return this.weekTemplateService.create(dto, group)
   }
 
   @Post(":name/bulk")
+  @HttpCode(HttpStatus.CREATED)
   createMany(
     @Body() dtos: CreateWeekTemplateDto[],
     @Param("name") group: string,
