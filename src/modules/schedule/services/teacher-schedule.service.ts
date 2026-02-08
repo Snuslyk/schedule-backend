@@ -219,7 +219,7 @@ export class TeacherScheduleService {
         const { finalLesson, groupName, slotLength, groupSlots, slotIndex } =
           item
         for (let i = 0; i < slotLength; i++) {
-          entry.slots.push(groupSlots[slotIndex + i])
+          entry.slots.push(groupSlots[slotIndex + 1 + i])
         }
         entry.lessons.push({
           ...finalLesson,
