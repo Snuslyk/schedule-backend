@@ -34,7 +34,7 @@ export class TeacherScheduleService {
 
     const days: DayDto[] = this.dayMapToDays(dayMap)
     const weekType = hasBothParities ? getWeekParity(startOfWeekDate) : WeekType.OTHER
-    return { weekType, days }
+    return { type: weekType, days }
   }
 
   private async fetchTeacherWithLessons(teacherId: number) {
