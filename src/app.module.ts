@@ -15,10 +15,14 @@ import { TeacherModule } from "./modules/teacher/teacher.module"
 import { ReplaceModule } from "./modules/replace/replace.module"
 import { OwnerModule } from "./modules/owner/owner.module"
 import { AuthModule } from "./modules/auth/auth.module"
+import { CacheModule } from '@nestjs/cache-manager'
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    CacheModule.register({
+      isGlobal: true
+    }),
     PrismaModule,
     SubjectModule,
     OrganizationModule,
