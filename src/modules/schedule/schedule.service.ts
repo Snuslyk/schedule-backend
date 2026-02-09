@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common"
 import { PrismaService } from "../../prisma/prisma.service"
 import { CreateScheduleDto } from "./schedule.dto"
 import { GroupScheduleService } from "./services/group-schedule.service"
-import { TeacherScheduleService } from './services/teacher-schedule.service'
+import { TeacherScheduleService } from "./services/teacher-schedule.service"
 
 @Injectable()
 export class ScheduleService {
