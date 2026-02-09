@@ -6,6 +6,10 @@ import { GroupScheduleService } from "./services/group-schedule.service"
 
 @Module({
   controllers: [ScheduleController],
-  providers: [ScheduleService, GroupScheduleService, TeacherScheduleService],
+  providers: [
+    ScheduleService,
+    GroupScheduleService,
+    TeacherScheduleService,
+  ],
 })
 export class ScheduleModule {}
