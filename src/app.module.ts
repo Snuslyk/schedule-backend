@@ -21,7 +21,8 @@ import { CacheModule } from '@nestjs/cache-manager'
   imports: [
     ConfigModule.forRoot(),
     CacheModule.register({
-      isGlobal: true
+      isGlobal: true,
+      ttl: 24 * 1000 * 60 * 60
     }),
     PrismaModule,
     SubjectModule,

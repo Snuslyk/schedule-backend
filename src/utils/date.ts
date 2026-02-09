@@ -12,6 +12,17 @@ export function isSameWeek(a: Date, b: Date): boolean {
   return startOfWeek(a).getTime() === startOfWeek(b).getTime()
 }
 
+export function isSameDay(a: Date, b: Date): boolean {
+  const dateA = new Date(a);
+  const dateB = new Date(b);
+
+  return (
+    dateA.getFullYear() === dateB.getFullYear() &&
+    dateA.getMonth() === dateB.getMonth() &&
+    dateA.getDate() === dateB.getDate()
+  );
+}
+
 export function getWeekDayIndex(date: Date): number {
   return (date.getDay() + 6) % 7
 }
