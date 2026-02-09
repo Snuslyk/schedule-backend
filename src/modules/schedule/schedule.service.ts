@@ -12,11 +12,7 @@ export class ScheduleService {
     private readonly teacherSchedule: TeacherScheduleService,
   ) {}
 
-  async getGroupWeek(
-    weekDate: Date,
-    groupName: string,
-    mode: "parity" | "other",
-  ) {
+  async getGroupWeek(weekDate: Date, groupName: string, mode: "parity" | "other") {
     return this.groupSchedule.getGroupWeek(weekDate, groupName, mode)
   }
 
