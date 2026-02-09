@@ -17,36 +17,40 @@ export class ScheduleController {
 
   @Get("week/group")
   getGroupWeek(
-    @Query("start", DatePipe) start: Date,
+    @Query("thisWeek", DatePipe) thisWeek: Date,
+    @Query("week", DatePipe) week: Date,
     @Query("group") group: string,
     @Query("mode", ModePipe) mode: "parity" | "other",
   ) {
-    return this.scheduleService.getGroupWeek(start, group, mode)
+    return this.scheduleService.getGroupWeek(thisWeek, week, group, mode)
   }
 
   @Get("day/group")
   getParityGroupDay(
-    @Query("date", DatePipe) date: Date,
+    @Query("thisDay", DatePipe) thisDay: Date,
+    @Query("day", DatePipe) day: Date,
     @Query("group") group: string,
     @Query("mode", ModePipe) mode: "parity" | "other",
   ) {
-    return this.scheduleService.getGroupDay(date, group, mode)
+    return this.scheduleService.getGroupDay(thisDay, day, group, mode)
   }
 
   @Get("week/teacher")
   getTeacherWeek(
-    @Query("date", DatePipe) date: Date,
+    @Query("thisWeek", DatePipe) thisWeek: Date,
+    @Query("week", DatePipe) week: Date,
     @Query("id", ParseIntPipe) id: number,
   ) {
-    return this.scheduleService.getTeacherWeek(id, date)
+    return this.scheduleService.getTeacherWeek(thisWeek, week, id)
   }
 
   @Get("day/teacher")
   getTeacherDay(
-    @Query("date", DatePipe) date: Date,
+    @Query("thisDay", DatePipe) thisDay: Date,
+    @Query("day", DatePipe) day: Date,
     @Query("id", ParseIntPipe) id: number,
   ) {
-    return this.scheduleService.getTeacherDay(id, date)
+    return this.scheduleService.getTeacherDay(thisDay, day, id)
   }
 
   @Post()
