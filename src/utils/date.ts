@@ -13,8 +13,8 @@ export function isSameWeek(a: Date, b: Date): boolean {
 }
 
 export function isSameDay(a: Date, b: Date): boolean {
-  const dateA = new Date(a);
-  const dateB = new Date(b);
+  const dateA = new Date(a)
+  const dateB = new Date(b)
 
   return (
     dateA.getFullYear() === dateB.getFullYear() &&

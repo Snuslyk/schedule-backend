@@ -4,7 +4,7 @@ export class GroupDto {
   id?: number
   name?: string
 
-  //schedule?: ScheduleDto | null;
+  //schedule?: ScheduleDto | null
 }
 
 export class CreateGroupDto {
@@ -14,5 +14,5 @@ export class CreateGroupDto {
   //@IsOptional()
   //@ValidateNested()
   //@Type(() => ScheduleDto)
-  //schedule?: ScheduleDto;
+  //schedule?: ScheduleDto
 }
