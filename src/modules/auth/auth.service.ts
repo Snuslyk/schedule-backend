@@ -84,7 +84,6 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token')
     }
 
-    // Ищем пользователя
     const user = await this.prismaService.user.findUnique({
       where: { id: payload.id },
       select: { id: true },
@@ -94,7 +93,6 @@ export class AuthService {
       throw new NotFoundException('User not found')
     }
 
-    // Генерируем новые токены
     return this.auth(res, user.id)
   }
 
@@ -112,6 +110,16 @@ export class AuthService {
     return { accessToken }
   }
 
+  private setCookie(res: Response, value: string, expires: Date) {
+    res.cookie('refreshToken', value, {
+      httpOnly: true,
+      domain: this.COOKIE_DOMAIN,
+      expires,
+      secure: !isDev(this.configService),
+      sameSite: isDev(this.configService) ? 'none' : 'lax'
+    })
+  }
+
   async validate(id: string) {
     const user = await this.prismaService.user.findUnique({
       where: {
@@ -124,16 +132,6 @@ export class AuthService {
     }
 
     return user
-  }
-
-  private setCookie(res: Response, value: string, expires: Date) {
-    res.cookie('refreshToken', value, {
-      httpOnly: true,
-      domain: this.COOKIE_DOMAIN,
-      expires,
-      secure: !isDev(this.configService),
-      sameSite: isDev(this.configService) ? 'none' : 'lax'
-    })
   }
 
   private generateTokens(id: string) {
