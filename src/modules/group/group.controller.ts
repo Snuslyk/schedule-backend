@@ -10,6 +10,8 @@ import {
 } from '@nestjs/common'
 import { GroupService } from "./group.service"
 import { CreateGroupDto } from "./group.dto"
+import { Authorization } from '../auth/decorators/authorization.decorator'
+import { IsAdmin } from '../auth/decorators/is-admin.decorator'
 
 @Controller("group")
 export class GroupController {
@@ -25,6 +27,8 @@ export class GroupController {
     return this.groupService.getByName(name)
   }
 
+  @Authorization()
+  @IsAdmin()
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(@Body() dto: CreateGroupDto) {

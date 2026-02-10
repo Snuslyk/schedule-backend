@@ -2,11 +2,15 @@ import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/
 import { AuthService } from "./auth.service"
 import { UserDto } from './auth.dto'
 import type { Response, Request } from 'express'
+import { Authorization } from './decorators/authorization.decorator'
+import { IsAdmin } from './decorators/is-admin.decorator'
 
 @Controller("auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Authorization()
+  @IsAdmin()
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(@Res({ passthrough: true }) res: Response, @Body() dto: UserDto) {
