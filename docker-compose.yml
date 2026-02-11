@@ -1,28 +1,38 @@
-version: '3.9'
+version: "3.8"
 
 services:
-  postgres:
+  db:
     image: postgres:15
-    container_name: schedule-postgres
+    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1534
+      POSTGRES_PASSWORD: "1534"
       POSTGRES_DB: schedule
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
   backend:
-    build: .
-    container_name: schedule-backend
-    restart: unless-stopped
-    env_file:
-      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      # переопределяем DATABASE_URL чтобы использовать имя сервиса db в сети compose
+      DATABASE_URL: "postgresql://postgres:1534@db:5432/schedule?schema=public"
+      DB_HOST: db
+      DB_PORT: "5432"
+      NODE_ENV: development
     ports:
-      - "${PORT}:4242"
+      - "4242:4242"
     depends_on:
-      - postgres
+      - db
+    # Опционально: для разработки можно монтировать рабочую папку, тогда при изменениях не нужно пересобирать образ
+    # volumes:
+    #   - ./:/usr/src/app
+    #   - /usr/src/app/node_modules
+    restart: on-failure
 
 volumes:
   pgdata:

@@ -1,34 +1,30 @@
-# Stage 1: Build
-FROM node:20-alpine AS builder
+# Используем официальный образ bun
+FROM oven/bun:1.4.0
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
-# Копируем package.json и package-lock.json
-COPY package*.json ./
+# Копируем package.json и lockfile для кэширования установки зависимостей
+COPY package.json bun.lock bun.lockb ./
 
-# Устанавливаем зависимости
-RUN npm install
+# Устанавливаем зависимости согласно lockfile
+RUN bun install --frozen-lockfile
 
 # Копируем весь проект
 COPY . .
 
-# Собираем NestJS
-RUN npm run build
+# Генерируем Prisma client (на случай, если schema уже в проекте)
+RUN bun prisma generate
 
-# Stage 2: Production image
-FROM node:20-alpine
+# Собираем проект (у тебя должен быть script "build" в package.json)
+RUN bun run build
 
-WORKDIR /app
+# Копируем (или создаём) entrypoint
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-COPY package*.json ./
-RUN npm install --production
-
-# Копируем сборку
-COPY --from=builder /app/dist ./dist
-COPY prisma ./prisma
-
-# Экспортируем порт
 EXPOSE 4242
 
-# Запуск
-CMD ["node", "dist/src/main.js"]
+# ENV NODE_ENV=production
+ENV NODE_ENV=development
+
+CMD ["/usr/local/bin/docker-entrypoint.sh"]
