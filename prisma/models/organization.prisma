@@ -12,12 +12,18 @@ model User {
   email    String @unique
   password String
 
-  isAdmin Boolean @default(false)
+  roles Role[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("user")
+}
+
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
 }
 
 model Student {

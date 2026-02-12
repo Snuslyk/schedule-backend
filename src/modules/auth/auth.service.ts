@@ -3,15 +3,15 @@ import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { JwtPayload } from './interfaces/jwt.interface'
 import ms, { StringValue } from 'ms'
-import { UserDto } from './auth.dto'
+import { UserCreateDto, UserDto } from './auth.dto'
 import { PrismaService } from '../../prisma/prisma.service'
 import { compare, hash } from 'bcryptjs'
 import type { Response, Request } from 'express'
 import { isDev } from '../../utils/is-dev'
+import { Role } from '../../../generated/prisma/enums'
 
 @Injectable()
 export class AuthService {
-  private readonly JWT_SECRET: string
   private readonly JWT_ACCESS_TOKEN_TTL: StringValue
   private readonly JWT_REFRESH_TOKEN_TTL: StringValue
 
@@ -22,13 +22,12 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService
   ) {
-    this.JWT_SECRET = configService.getOrThrow('JWT_SECRET')
     this.JWT_ACCESS_TOKEN_TTL = configService.getOrThrow('JWT_ACCESS_TOKEN_TTL')
     this.JWT_REFRESH_TOKEN_TTL = configService.getOrThrow('JWT_REFRESH_TOKEN_TTL')
     this.COOKIE_DOMAIN = configService.getOrThrow('COOKIE_DOMAIN')
   }
 
-  async register(res: Response, dto: UserDto) {
+  async register(res: Response, dto: UserCreateDto) {
     const existUser = await this.prismaService.user.findUnique({
       where: { email: dto.email }
     })
@@ -40,19 +39,21 @@ export class AuthService {
     const user = await this.prismaService.user.create({
       data: {
         email: dto.email,
-        password: await hash(dto.password, 10)
+        password: await hash(dto.password, 10),
+        roles: dto.roles
       }
     })
 
-    return this.auth(res, user.id)
+    return this.auth(res, user.id, user.roles)
   }
 
   async login(res: Response, dto: UserDto) {
-    const user = await this.prismaService.user.findUnique({
+    const user: UserDto | null = await this.prismaService.user.findUnique({
       where: { email: dto.email },
       select: {
         id: true,
-        password: true
+        password: true,
+        roles: true
       }
     })
 
@@ -60,13 +61,13 @@ export class AuthService {
       throw new NotFoundException('User not found')
     }
 
-    const isValidPassword: boolean = await compare(dto.password, user.password)
+    const isValidPassword: boolean = await compare(dto.password!, user.password!)
 
     if (!isValidPassword) {
       throw new NotFoundException('User not found')
     }
 
-    return this.auth(res, user.id)
+    return this.auth(res, user.id!, user.roles!)
 
   }
 
@@ -84,30 +85,37 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token')
     }
 
-    const user = await this.prismaService.user.findUnique({
+    const user: UserDto | null = await this.prismaService.user.findUnique({
       where: { id: payload.id },
-      select: { id: true },
+      select: { id: true, roles: true },
     })
 
     if (!user) {
       throw new NotFoundException('User not found')
     }
 
-    return this.auth(res, user.id)
+    return this.auth(res, user.id!, user.roles!)
   }
 
   logout(res: Response) {
     this.setCookie(res, 'refreshToken', new Date(0))
   }
 
-  private auth(res: Response, id: string) {
-    const { accessToken, refreshToken } = this.generateTokens(id)
+  private auth(res: Response, id: string, roles: Role[]) {
+    const { accessToken, refreshToken } = this.generateTokens(id, roles)
 
     const refreshTokenTTL = ms(this.JWT_REFRESH_TOKEN_TTL)
 
     this.setCookie(res, refreshToken, new Date(Date.now() + refreshTokenTTL))
 
     return { accessToken }
+  }
+
+  roles(id: string, role: Role) {
+    return this.prismaService.user.update({
+      where: { id },
+      data: { roles: [ role ] }
+    })
   }
 
   private setCookie(res: Response, value: string, expires: Date) {
@@ -134,8 +142,8 @@ export class AuthService {
     return user
   }
 
-  private generateTokens(id: string) {
-    const payload: JwtPayload = { id: id }
+  private generateTokens(id: string, roles: Role[]) {
+    const payload: JwtPayload = { id, roles }
 
     const accessToken = this.jwtService.sign(payload, {
       expiresIn: this.JWT_ACCESS_TOKEN_TTL

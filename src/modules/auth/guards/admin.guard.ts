@@ -10,6 +10,6 @@ export class AdminGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const req: Request = ctx.switchToHttp().getRequest()
     const user = req.user as User | undefined
-    return user?.isAdmin === true
+    return user?.roles.includes('ADMIN') ?? false
   }
 }
