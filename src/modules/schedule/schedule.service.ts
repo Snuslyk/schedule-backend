@@ -15,30 +15,34 @@ export class ScheduleService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  async getGroupWeek(thisWeekDate: Date, weekDate: Date, groupName: string, mode: "parity" | "other") {
+  async getGroupWeek(weekDate: Date, groupName: string, mode: "parity" | "other") {
     const cacheKey = `group_week:${groupName}`
+    
+    const thisWeekDate = new Date()
 
     return this.cacheOrCompute(cacheKey, isSameWeek(thisWeekDate, weekDate), () =>
       this.groupSchedule.getGroupWeek(weekDate, groupName, mode)
     )
   }
 
-  async getGroupDay(thisDayDate: Date, dayDate: Date, groupName: string, mode: "parity" | "other") {
-    const week = await this.getGroupWeek(thisDayDate, dayDate, groupName, mode)
+  async getGroupDay(dayDate: Date, groupName: string, mode: "parity" | "other") {
+    const week = await this.getGroupWeek(dayDate, groupName, mode)
     const dayIndex = getWeekDayIndex(dayDate)
     return week.days![dayIndex] ?? { lessons: [], slots: [] }
   }
 
-  async getTeacherWeek(thisWeekDate: Date, weekDate: Date, teacherId: number) {
+  async getTeacherWeek(weekDate: Date, teacherId: number) {
     const cacheKey = `teacher_week:${teacherId}`
+
+    const thisWeekDate = new Date()
 
     return this.cacheOrCompute(cacheKey, isSameWeek(thisWeekDate, weekDate), () =>
       this.teacherSchedule.getTeacherWeek(teacherId, weekDate)
     )
   }
 
-  async getTeacherDay(thisDayDate: Date, dayDate: Date, teacherId: number) {
-    const week = await this.getTeacherWeek(thisDayDate, dayDate, teacherId)
+  async getTeacherDay(dayDate: Date, teacherId: number) {
+    const week = await this.getTeacherWeek(dayDate, teacherId)
     const dayIndex = getWeekDayIndex(dayDate)
     return week.days[dayIndex] ?? { lessons: [], slots: [] }
   }
