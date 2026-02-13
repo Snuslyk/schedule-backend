@@ -1,10 +1,15 @@
-import { BadRequestException, Injectable } from "@nestjs/common"
+import { BadRequestException, Inject, Injectable } from '@nestjs/common'
 import { PrismaService } from "../../prisma/prisma.service"
 import { CreateReplaceDto } from "./replace.dto"
+import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager'
+import { isSameWeek } from '../../utils/date'
 
 @Injectable()
 export class ReplaceService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
+  ) {}
 
   async create(dto: CreateReplaceDto, groupName: string) {
     const group = await this.prisma.group.findUnique({
@@ -24,6 +29,11 @@ export class ReplaceService {
       throw new BadRequestException(
         `There is no schedule with group name ${groupName}!`,
       )
+    }
+
+    const thisWeek = new Date()
+    if (isSameWeek(thisWeek, dto.date)) {
+      await this.cacheManager.del(groupName)
     }
 
     return this.prisma.replace.create({
@@ -60,6 +70,13 @@ export class ReplaceService {
     }
 
     const scheduleId = group.schedule.id
+
+    const thisWeek = new Date()
+    if (dtos.some(dto =>
+      isSameWeek(thisWeek, dto.date)
+    )) {
+      await this.cacheManager.del(groupName)
+    }
 
     return this.prisma.replace.createMany({
       data: dtos.map((dto) => ({
