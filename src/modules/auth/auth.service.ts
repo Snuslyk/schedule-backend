@@ -5,7 +5,7 @@ import { JwtPayload } from './interfaces/jwt.interface'
 import ms, { StringValue } from 'ms'
 import { UserCreateDto, UserDto } from './auth.dto'
 import { PrismaService } from '../../prisma/prisma.service'
-import { compare, hash } from 'bcryptjs'
+import { password } from 'bun'
 import type { Response, Request } from 'express'
 import { isDev } from '../../utils/is-dev'
 import { Role } from '../../../generated/prisma/enums'
@@ -39,7 +39,7 @@ export class AuthService {
     const user = await this.prismaService.user.create({
       data: {
         email: dto.email,
-        password: await hash(dto.password, 10),
+        password: await password.hash(dto.password),
         roles: dto.roles
       }
     })
@@ -61,7 +61,7 @@ export class AuthService {
       throw new NotFoundException('User not found')
     }
 
-    const isValidPassword: boolean = await compare(dto.password!, user.password!)
+    const isValidPassword: boolean = await password.verify(dto.password!, user.password!)
 
     if (!isValidPassword) {
       throw new NotFoundException('User not found')
