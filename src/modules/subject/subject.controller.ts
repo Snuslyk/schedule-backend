@@ -3,38 +3,39 @@ import {
   Controller,
   Get, HttpCode, HttpStatus,
   Post,
-  Query,
-  UseGuards,
-  UseInterceptors,
 } from '@nestjs/common'
 import { SubjectService } from "./subject.service"
-import { ConceptionPipe } from "../../conception/conception.pipe"
-import { ConceptionGuard } from "../../conception/conception.guard"
-import { ConceptionInterceptor } from "../../conception/conception.interceptor"
 import { CreateSubjectDto } from "./subject.dto"
+import {
+  ApiBody,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger'
 
-@Controller("subject")
-@UseInterceptors(ConceptionInterceptor)
+@ApiTags('Subject')
+@Controller('subject')
 export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}
 
   @Get()
-  @UseGuards(ConceptionGuard)
-  findAll(@Query("pageNumber", ConceptionPipe) pageNumber: number) {
-    console.log(pageNumber)
+  @ApiOperation({ summary: 'Get all subjects' })
+  @HttpCode(HttpStatus.OK)
+  findAll() {
     return this.subjectService.findAll()
   }
 
   @Post()
+  @ApiOperation({ summary: 'Create a new subject' })
+  @ApiBody({ type: CreateSubjectDto })
   @HttpCode(HttpStatus.CREATED)
-  //@UseGuards(ConceptionGuard)
   create(@Body() dto: CreateSubjectDto) {
     return this.subjectService.create(dto)
   }
 
-  @Post("bulk")
+  @Post('bulk')
+  @ApiOperation({ summary: 'Create multiple subjects' })
+  @ApiBody({ type: [CreateSubjectDto] })
   @HttpCode(HttpStatus.CREATED)
-  //@UseGuards(ConceptionGuard)
   createMany(@Body() dtos: CreateSubjectDto[]) {
     return this.subjectService.createMany(dtos)
   }

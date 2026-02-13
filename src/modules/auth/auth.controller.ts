@@ -5,7 +5,13 @@ import type { Response, Request } from 'express'
 import { Authorization } from './decorators/authorization.decorator'
 import { IsAdmin } from './decorators/is-admin.decorator'
 import { Role } from '../../../generated/prisma/enums'
+import {
+  ApiBody, ApiCookieAuth,
+  ApiOperation, ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger'
 
+@ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -13,31 +19,54 @@ export class AuthController {
   //@Authorization()
   //@IsAdmin()
   @Post('register')
+  @ApiOperation({ summary: 'Register new user' })
+  @ApiBody({ type: UserCreateDto })
   @HttpCode(HttpStatus.CREATED)
-  async register(@Res({ passthrough: true }) res: Response, @Body() dto: UserCreateDto) {
-    return await this.authService.register(res, dto)
+  async register(
+    @Res({ passthrough: true }) res: Response,
+    @Body() dto: UserCreateDto
+  ) {
+    return this.authService.register(res, dto)
   }
 
   @Post('login')
+  @ApiOperation({ summary: 'User login' })
+  @ApiBody({ type: UserDto })
   @HttpCode(HttpStatus.OK)
-  async login(@Res({ passthrough: true }) res: Response, @Body() dto: UserDto) {
-    return await this.authService.login(res, dto)
+  async login(
+    @Res({ passthrough: true }) res: Response,
+    @Body() dto: UserDto
+  ) {
+    return this.authService.login(res, dto)
   }
 
   @Post('refresh')
+  @ApiOperation({ summary: 'Refresh access token using refresh token cookie' })
+  @ApiCookieAuth('refreshToken')
   @HttpCode(HttpStatus.OK)
-  async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    return await this.authService.refresh(req, res)
+  async refresh(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    return this.authService.refresh(req, res)
   }
 
   @Post('logout')
+  @ApiOperation({ summary: 'Logout user and clear cookies' })
   @HttpCode(HttpStatus.OK)
   logout(@Res({ passthrough: true }) res: Response) {
     return this.authService.logout(res)
   }
 
   @Post('role')
-  roles(@Query('id') id: string, @Query('role') role: Role) {
+  @ApiOperation({ summary: 'Add role to user' })
+  @ApiQuery({ name: 'id', type: String, description: 'User ID' })
+  @ApiQuery({ name: 'role', enum: Role, description: 'Role to assign' })
+  @HttpCode(HttpStatus.OK)
+  addRole(
+    @Query('id') id: string,
+    @Query('role') role: Role
+  ) {
     return this.authService.roles(id, role)
   }
 }
