@@ -32,7 +32,7 @@ export class UserCreateDto {
     description: 'Array of user roles',
     enum: Role,
     isArray: true,
-    example: ['USER']
+    example: ['STUDENT']
   })
   @IsArray()
   @IsEnum(Role, { each: true })
