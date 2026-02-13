@@ -91,3 +91,9 @@ export function getEndOfWeek(startDate: Date): Date {
   endDate.setDate(startDate.getDate() + 6)
   return endDate
 }
+
+export function msUntilEndOfDay(now = new Date()): number {
+  const end = new Date(now);
+  end.setHours(23, 59, 59, 999);
+  return end.getTime() - now.getTime();
+}

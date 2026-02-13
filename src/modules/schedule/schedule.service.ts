@@ -4,7 +4,7 @@ import { CreateScheduleDto } from "./schedule.dto"
 import { GroupScheduleService } from "./services/group-schedule.service"
 import { TeacherScheduleService } from "./services/teacher-schedule.service"
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager'
-import { getWeekDayIndex, isSameWeek } from '../../utils/date'
+import { getWeekDayIndex, isSameWeek, msUntilEndOfDay } from '../../utils/date'
 
 @Injectable()
 export class ScheduleService {
@@ -57,8 +57,10 @@ export class ScheduleService {
     const cached = await this.cacheManager.get<T>(cacheKey)
     if (cached) return cached
 
+    const ttl: number = msUntilEndOfDay()
+
     const result = await compute()
-    await this.cacheManager.set(cacheKey, result)
+    await this.cacheManager.set(cacheKey, result, ttl)
     return result
   }
 
