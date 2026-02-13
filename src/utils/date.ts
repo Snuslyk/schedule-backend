@@ -20,7 +20,7 @@ export function isSameDay(a: Date, b: Date): boolean {
     dateA.getFullYear() === dateB.getFullYear() &&
     dateA.getMonth() === dateB.getMonth() &&
     dateA.getDate() === dateB.getDate()
-  );
+  )
 }
 
 export function getWeekDayIndex(date: Date): number {
@@ -93,7 +93,7 @@ export function getEndOfWeek(startDate: Date): Date {
 }
 
 export function msUntilEndOfDay(now = new Date()): number {
-  const end = new Date(now);
-  end.setHours(23, 59, 59, 999);
-  return end.getTime() - now.getTime();
+  const end = new Date(now)
+  end.setHours(23, 59, 59, 999)
+  return end.getTime() - now.getTime()
 }
