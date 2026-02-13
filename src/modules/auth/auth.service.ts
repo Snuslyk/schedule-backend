@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { JwtPayload } from './interfaces/jwt.interface'
 import ms, { StringValue } from 'ms'
-import { UserCreateDto, UserDto } from './auth.dto'
+import { UserRegisterDto, UserDto, UserLoginDto } from './auth.dto'
 import { PrismaService } from '../../prisma/prisma.service'
 import { password } from 'bun'
 import type { Response, Request } from 'express'
@@ -27,7 +27,7 @@ export class AuthService {
     this.COOKIE_DOMAIN = configService.getOrThrow('COOKIE_DOMAIN')
   }
 
-  async register(res: Response, dto: UserCreateDto) {
+  async register(res: Response, dto: UserRegisterDto) {
     const existUser = await this.prismaService.user.findUnique({
       where: { email: dto.email }
     })
@@ -47,7 +47,7 @@ export class AuthService {
     return this.auth(res, user.id, user.roles)
   }
 
-  async login(res: Response, dto: UserDto) {
+  async login(res: Response, dto: UserLoginDto) {
     const user: UserDto | null = await this.prismaService.user.findUnique({
       where: { email: dto.email },
       select: {
@@ -61,7 +61,7 @@ export class AuthService {
       throw new NotFoundException('User not found')
     }
 
-    const isValidPassword: boolean = await password.verify(dto.password!, user.password!)
+    const isValidPassword: boolean = await password.verify(dto.password, user.password!)
 
     if (!isValidPassword) {
       throw new NotFoundException('User not found')

@@ -2,7 +2,7 @@ import { IsArray, IsEmail, IsEnum, IsNotEmpty, IsString, MaxLength, MinLength } 
 import { Role } from '../../../generated/prisma/enums'
 import { ApiProperty } from '@nestjs/swagger'
 
-export class UserCreateDto {
+export class UserRegisterDto {
 
   @ApiProperty({
     example: 'user@example.com',
@@ -39,17 +39,31 @@ export class UserCreateDto {
   roles: Role[]
 }
 
-export class UserDto {
-  id?: string
-
+export class UserLoginDto {
+  @ApiProperty({
+    example: 'user@example.com',
+    description: 'The email address of the user',
+    format: 'email'
+  })
   @IsString()
   @IsNotEmpty()
   @IsEmail()
-  email?: string
+  email: string
 
+  @ApiProperty({
+    example: 'strongPassword123',
+    description: 'The password of the user',
+    minLength: 6,
+    maxLength: 128
+  })
   @IsString()
   @IsNotEmpty()
-  password?: string
+  password: string
+}
 
+export class UserDto {
+  id?: string
+  email?: string
+  password?: string
   roles?: Role[]
 }

@@ -1,6 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, Query, Req, Res } from '@nestjs/common'
 import { AuthService } from "./auth.service"
-import { UserCreateDto, UserDto } from './auth.dto'
+import { UserRegisterDto, UserDto, UserLoginDto } from './auth.dto'
 import type { Response, Request } from 'express'
 import { Authorization } from './decorators/authorization.decorator'
 import { IsAdmin } from './decorators/is-admin.decorator'
@@ -20,22 +20,22 @@ export class AuthController {
   //@IsAdmin()
   @Post('register')
   @ApiOperation({ summary: 'Register new user' })
-  @ApiBody({ type: UserCreateDto })
+  @ApiBody({ type: UserRegisterDto })
   @HttpCode(HttpStatus.CREATED)
   async register(
     @Res({ passthrough: true }) res: Response,
-    @Body() dto: UserCreateDto
+    @Body() dto: UserRegisterDto
   ) {
     return this.authService.register(res, dto)
   }
 
   @Post('login')
   @ApiOperation({ summary: 'User login' })
-  @ApiBody({ type: UserDto })
+  @ApiBody({ type: UserLoginDto })
   @HttpCode(HttpStatus.OK)
   async login(
     @Res({ passthrough: true }) res: Response,
-    @Body() dto: UserDto
+    @Body() dto: UserLoginDto
   ) {
     return this.authService.login(res, dto)
   }
