@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { ConfigService } from "@nestjs/config"
 import {
   GetObjectCommand, HeadObjectCommand,
@@ -8,7 +8,6 @@ import {
 import sharp from "sharp"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { PrismaService } from '../../prisma/prisma.service'
-import { metadata } from 'reflect-metadata/no-conflict'
 
 @Injectable()
 export class AvatarService {

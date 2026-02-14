@@ -10,7 +10,6 @@ import {
   ApiOperation, ApiQuery,
   ApiTags,
 } from '@nestjs/swagger'
-import { AvatarService } from '../avatar/avatar.service'
 import { Authorized } from './decorators/authorized.decorator'
 import type { User } from '../../../generated/prisma/client'
 import { AuthGuard } from '@nestjs/passport'
