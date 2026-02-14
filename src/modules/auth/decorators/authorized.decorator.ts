@@ -1,4 +1,4 @@
-import { createParamDecorator, ExecutionContext } from '@nestjs/common'
+import { createParamDecorator, ExecutionContext, UnauthorizedException } from '@nestjs/common'
 import { User } from '../../../../generated/prisma/client'
 import { Request } from 'express'
 
@@ -7,7 +7,8 @@ export const Authorized = createParamDecorator(
     const request: Request = ctx.switchToHttp().getRequest()
 
     const user = request.user
+    if (!user) throw new UnauthorizedException()
 
-    return data ? user![data] : user
+    return data ? user[data] : user
   }
 )

@@ -1,6 +1,6 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Query, Req, Res } from '@nestjs/common'
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Req, Res, UseGuards } from '@nestjs/common'
 import { AuthService } from "./auth.service"
-import { UserRegisterDto, UserDto, UserLoginDto } from './auth.dto'
+import { UserRegisterDto, UserLoginDto } from './auth.dto'
 import type { Response, Request } from 'express'
 import { Authorization } from './decorators/authorization.decorator'
 import { IsAdmin } from './decorators/is-admin.decorator'
@@ -10,6 +10,10 @@ import {
   ApiOperation, ApiQuery,
   ApiTags,
 } from '@nestjs/swagger'
+import { AvatarService } from '../avatar/avatar.service'
+import { Authorized } from './decorators/authorized.decorator'
+import type { User } from '../../../generated/prisma/client'
+import { AuthGuard } from '@nestjs/passport'
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -56,6 +60,13 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   logout(@Res({ passthrough: true }) res: Response) {
     return this.authService.logout(res)
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('profile')
+  @HttpCode(HttpStatus.OK)
+  async getProfile(@Authorized() user: User) {
+    return await this.authService.getProfile(user)
   }
 
   @Post('role')

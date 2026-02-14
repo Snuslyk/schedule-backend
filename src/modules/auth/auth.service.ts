@@ -9,6 +9,8 @@ import { password } from 'bun'
 import type { Response, Request } from 'express'
 import { isDev } from '../../utils/is-dev'
 import { Role } from '../../../generated/prisma/enums'
+import { User } from '../../../generated/prisma/client'
+import { AvatarService } from '../avatar/avatar.service'
 
 @Injectable()
 export class AuthService {
@@ -20,7 +22,8 @@ export class AuthService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly configService: ConfigService,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
+    private readonly avatarService: AvatarService
   ) {
     this.JWT_ACCESS_TOKEN_TTL = configService.getOrThrow('JWT_ACCESS_TOKEN_TTL')
     this.JWT_REFRESH_TOKEN_TTL = configService.getOrThrow('JWT_REFRESH_TOKEN_TTL')
@@ -38,6 +41,7 @@ export class AuthService {
 
     const user = await this.prismaService.user.create({
       data: {
+        name: dto.name,
         email: dto.email,
         password: await password.hash(dto.password),
         roles: dto.roles
@@ -128,8 +132,20 @@ export class AuthService {
     })
   }
 
+  async getProfile(user: User) {
+
+    const avatarUrl = await this.avatarService.getAvatarUrl(user.id)
+
+    return {
+      name: user.name,
+      email: user.email,
+      roles: user.roles,
+      avatar: avatarUrl
+    }
+  }
+
   async validate(id: string) {
-    const user = await this.prismaService.user.findUnique({
+    const user: User | null = await this.prismaService.user.findUnique({
       where: {
         id
       }

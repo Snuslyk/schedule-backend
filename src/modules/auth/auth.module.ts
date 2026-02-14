@@ -6,9 +6,11 @@ import { ConfigService } from '@nestjs/config'
 import { getJwtConfig } from '../../../config/jwt.config'
 import { JwtStrategy } from './strategies/jwt.strategy'
 import { PassportModule } from '@nestjs/passport'
+import { AvatarModule } from '../avatar/avatar.module'
 
 @Module({
   imports: [
+    AvatarModule,
     PassportModule,
     JwtModule.registerAsync({
       useFactory: getJwtConfig,

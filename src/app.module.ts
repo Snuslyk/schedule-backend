@@ -16,6 +16,7 @@ import { ReplaceModule } from "./modules/replace/replace.module"
 import { OwnerModule } from "./modules/owner/owner.module"
 import { AuthModule } from "./modules/auth/auth.module"
 import { CacheModule } from '@nestjs/cache-manager'
+import { AvatarModule } from './modules/avatar/avatar.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { CacheModule } from '@nestjs/cache-manager'
     ReplaceModule,
     OwnerModule,
     AuthModule,
+    AvatarModule,
   ],
   controllers: [AppController],
   providers: [AppService],
