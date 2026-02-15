@@ -1,5 +1,5 @@
-import { Controller, Get, ParseIntPipe, Query } from "@nestjs/common"
-import { OwnerService } from "./owner.service"
+import { Controller, Get, ParseIntPipe, Query } from '@nestjs/common'
+import { OwnerService } from './owner.service'
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
 
 @ApiTags('Owner')
@@ -9,11 +9,21 @@ export class OwnerController {
 
   @Get()
   @ApiOperation({ summary: 'Find owners by name with a specified quantity' })
-  @ApiQuery({ name: 'name', type: String, description: 'Owner name to search', example: 'John' })
-  @ApiQuery({ name: 'quantity', type: Number, description: 'Maximum number of results', example: 5 })
+  @ApiQuery({
+    name: 'name',
+    type: String,
+    description: 'Owner name to search',
+    example: 'John',
+  })
+  @ApiQuery({
+    name: 'quantity',
+    type: Number,
+    description: 'Maximum number of results',
+    example: 5,
+  })
   findByName(
     @Query('name') name: string,
-    @Query('quantity', ParseIntPipe) quantity: number
+    @Query('quantity', ParseIntPipe) quantity: number,
   ) {
     return this.ownerService.findByName(name, quantity)
   }

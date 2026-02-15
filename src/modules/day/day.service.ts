@@ -1,5 +1,5 @@
-import { Injectable, NotFoundException } from "@nestjs/common"
-import { PrismaService } from "../../prisma/prisma.service"
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { PrismaService } from '../../prisma/prisma.service'
 
 @Injectable()
 export class DayService {
@@ -23,7 +23,7 @@ export class DayService {
     try {
       await this.prisma.day.delete({ where: { id: id } })
     } catch (e) {
-      if (e.code === "P2025") {
+      if (e.code === 'P2025') {
         throw new NotFoundException(`Day with id ${id} not found`)
       }
       throw e

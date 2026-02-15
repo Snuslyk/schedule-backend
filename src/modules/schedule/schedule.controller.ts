@@ -1,20 +1,18 @@
 import {
   Body,
   Controller,
-  Get, HttpCode, HttpStatus,
+  Get,
+  HttpCode,
+  HttpStatus,
   ParseIntPipe,
   Post,
   Query,
 } from '@nestjs/common'
-import { ScheduleService } from "./schedule.service"
-import { DatePipe } from "../../date/date.pipe"
-import { CreateScheduleDto } from "./schedule.dto"
-import { ModePipe } from "./mode/mode.pipe"
-import {
-  ApiBody,
-  ApiOperation,
-  ApiQuery, ApiTags,
-} from '@nestjs/swagger'
+import { ScheduleService } from './schedule.service'
+import { DatePipe } from '../../date/date.pipe'
+import { CreateScheduleDto } from './schedule.dto'
+import { ModePipe } from './mode/mode.pipe'
+import { ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
 
 @ApiTags('Schedule')
 @Controller('schedule')
@@ -23,9 +21,18 @@ export class ScheduleController {
 
   @Get('week/group')
   @ApiOperation({ summary: 'Get weekly schedule for a group' })
-  @ApiQuery({ name: 'week', type: String, description: 'Start date of the week (YYYY-MM-DD)' })
+  @ApiQuery({
+    name: 'week',
+    type: String,
+    description: 'Start date of the week (YYYY-MM-DD)',
+  })
   @ApiQuery({ name: 'group', type: String, description: 'Group name' })
-  @ApiQuery({ name: 'mode', type: String, enum: ['parity', 'other'], description: 'Schedule mode' })
+  @ApiQuery({
+    name: 'mode',
+    type: String,
+    enum: ['parity', 'other'],
+    description: 'Schedule mode',
+  })
   @HttpCode(HttpStatus.OK)
   getGroupWeek(
     @Query('week', DatePipe) week: Date,
@@ -39,7 +46,12 @@ export class ScheduleController {
   @ApiOperation({ summary: 'Get daily schedule for a group' })
   @ApiQuery({ name: 'day', type: String, description: 'Date (YYYY-MM-DD)' })
   @ApiQuery({ name: 'group', type: String, description: 'Group name' })
-  @ApiQuery({ name: 'mode', type: String, enum: ['parity', 'other'], description: 'Schedule mode' })
+  @ApiQuery({
+    name: 'mode',
+    type: String,
+    enum: ['parity', 'other'],
+    description: 'Schedule mode',
+  })
   @HttpCode(HttpStatus.OK)
   getParityGroupDay(
     @Query('day', DatePipe) day: Date,
@@ -51,7 +63,11 @@ export class ScheduleController {
 
   @Get('week/teacher')
   @ApiOperation({ summary: 'Get weekly schedule for a teacher' })
-  @ApiQuery({ name: 'week', type: String, description: 'Start date of the week (YYYY-MM-DD)' })
+  @ApiQuery({
+    name: 'week',
+    type: String,
+    description: 'Start date of the week (YYYY-MM-DD)',
+  })
   @ApiQuery({ name: 'id', type: Number, description: 'Teacher ID' })
   @HttpCode(HttpStatus.OK)
   getTeacherWeek(

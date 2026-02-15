@@ -1,7 +1,7 @@
-import { IsNumber, IsString, IsBoolean } from "class-validator"
-import { DayDto } from "../day/day.dto"
-import { TeacherDto } from "../teacher/teacher.dto"
-import { SubjectDto } from "../subject/subject.dto"
+import { IsNumber, IsString, IsBoolean } from 'class-validator'
+import { DayDto } from '../day/day.dto'
+import { TeacherDto } from '../teacher/teacher.dto'
+import { SubjectDto } from '../subject/subject.dto'
 
 export class LessonDto {
   id?: number

@@ -2,21 +2,21 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-} from "@nestjs/common"
-import { PrismaService } from "../../../prisma/prisma.service"
-import { SlotDto } from "../../slot/slot.dto"
-import { LessonDto } from "../../lesson/lesson.dto"
-import { WeekType } from "../../../../generated/prisma/enums"
+} from '@nestjs/common'
+import { PrismaService } from '../../../prisma/prisma.service'
+import { SlotDto } from '../../slot/slot.dto'
+import { LessonDto } from '../../lesson/lesson.dto'
+import { WeekType } from '../../../../generated/prisma/enums'
 import {
   getWeekDayIndex,
   getWeekParity,
   startOfWeek,
-} from "../../../utils/date"
-import { DayDto } from "../../day/day.dto"
-import { TeacherDto } from "../../teacher/teacher.dto"
+} from '../../../utils/date'
+import { DayDto } from '../../day/day.dto'
+import { TeacherDto } from '../../teacher/teacher.dto'
 
 type ResolvedLesson = {
-  lesson: Omit<LessonDto, "day">
+  lesson: Omit<LessonDto, 'day'>
   groupName: string
   dayOfWeek: number
   slotNumber: number
@@ -36,7 +36,8 @@ export class TeacherScheduleService {
 
   async getTeacherWeek(teacherId: number, date: Date) {
     const start = startOfWeek(date)
-    const teacher: TeacherDto | null = await this.loadTeacherWithLessons(teacherId)
+    const teacher: TeacherDto | null =
+      await this.loadTeacherWithLessons(teacherId)
     if (!teacher) {
       throw new BadRequestException(`Teacher with id ${teacherId} not found`)
     }
@@ -90,12 +91,17 @@ export class TeacherScheduleService {
     const types = new Set(
       lessons
         .map((l) => l.day?.weekTemplate?.type)
-        .filter((t): t is WeekType => t === WeekType.EVEN || t === WeekType.ODD),
+        .filter(
+          (t): t is WeekType => t === WeekType.EVEN || t === WeekType.ODD,
+        ),
     )
     return types.has(WeekType.EVEN) && types.has(WeekType.ODD)
   }
 
-  private buildWeekDays(lessons: LessonDto[], requestedParity: WeekType): DayDto[] {
+  private buildWeekDays(
+    lessons: LessonDto[],
+    requestedParity: WeekType,
+  ): DayDto[] {
     const resolved = lessons
       .map((lesson) => this.resolveLesson(lesson, requestedParity))
       .filter((r): r is ResolvedLesson => r !== null)
@@ -112,8 +118,10 @@ export class TeacherScheduleService {
     if (!day?.weekTemplate) return null
 
     const templateType = day.weekTemplate.type
-    if (templateType === WeekType.EVEN && requestedParity === WeekType.ODD) return null
-    if (templateType === WeekType.ODD && requestedParity === WeekType.EVEN) return null
+    if (templateType === WeekType.EVEN && requestedParity === WeekType.ODD)
+      return null
+    if (templateType === WeekType.ODD && requestedParity === WeekType.EVEN)
+      return null
 
     const dayOfWeek = day.weekTemplate.days?.findIndex((d) => d.id === day.id)
     if (dayOfWeek == null || dayOfWeek < 0) return null
@@ -134,7 +142,7 @@ export class TeacherScheduleService {
       slots.push(slot)
     }
 
-    const groupName = day.weekTemplate.schedule?.group?.name ?? ""
+    const groupName = day.weekTemplate.schedule?.group?.name ?? ''
     const { day: _day, ...lessonWithoutDay } = lesson
 
     return {
@@ -147,7 +155,9 @@ export class TeacherScheduleService {
     }
   }
 
-  private groupByDay(resolved: ResolvedLesson[]): Map<number, ResolvedLesson[]> {
+  private groupByDay(
+    resolved: ResolvedLesson[],
+  ): Map<number, ResolvedLesson[]> {
     const byDay = new Map<number, ResolvedLesson[]>()
     for (const r of resolved) {
       const resolvedLessons = byDay.get(r.dayOfWeek) ?? []
@@ -166,7 +176,7 @@ export class TeacherScheduleService {
       )
 
       const slots: SlotDto[] = []
-      const lessons: (Omit<LessonDto, "day"> & { groupName: string })[] = []
+      const lessons: (Omit<LessonDto, 'day'> & { groupName: string })[] = []
       let nextSlotNumber = 1
 
       for (const item of items) {

@@ -7,7 +7,10 @@ import { JwtPayload } from '../interfaces/jwt.interface'
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly authService: AuthService, private readonly configService: ConfigService) {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {
     const jwtFromRequest = (req: Request): string | null =>
       ExtractJwt.fromAuthHeaderAsBearerToken()(req)
 
@@ -15,7 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest,
       ignoreExpiration: false,
       secretOrKey: configService.getOrThrow<string>('JWT_SECRET'),
-      algorithms: ['HS256']
+      algorithms: ['HS256'],
     })
   }
 

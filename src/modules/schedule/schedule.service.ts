@@ -1,8 +1,8 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common'
-import { PrismaService } from "../../prisma/prisma.service"
-import { CreateScheduleDto } from "./schedule.dto"
-import { GroupScheduleService } from "./services/group-schedule.service"
-import { TeacherScheduleService } from "./services/teacher-schedule.service"
+import { PrismaService } from '../../prisma/prisma.service'
+import { CreateScheduleDto } from './schedule.dto'
+import { GroupScheduleService } from './services/group-schedule.service'
+import { TeacherScheduleService } from './services/teacher-schedule.service'
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager'
 import { getWeekDayIndex, isSameWeek, msUntilEndOfDay } from '../../utils/date'
 
@@ -15,17 +15,27 @@ export class ScheduleService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  async getGroupWeek(weekDate: Date, groupName: string, mode: "parity" | "other") {
+  async getGroupWeek(
+    weekDate: Date,
+    groupName: string,
+    mode: 'parity' | 'other',
+  ) {
     const cacheKey = `group_week:${groupName}`
-    
+
     const thisWeekDate = new Date()
 
-    return this.cacheOrCompute(cacheKey, isSameWeek(thisWeekDate, weekDate), () =>
-      this.groupSchedule.getGroupWeek(weekDate, groupName, mode)
+    return this.cacheOrCompute(
+      cacheKey,
+      isSameWeek(thisWeekDate, weekDate),
+      () => this.groupSchedule.getGroupWeek(weekDate, groupName, mode),
     )
   }
 
-  async getGroupDay(dayDate: Date, groupName: string, mode: "parity" | "other") {
+  async getGroupDay(
+    dayDate: Date,
+    groupName: string,
+    mode: 'parity' | 'other',
+  ) {
     const week = await this.getGroupWeek(dayDate, groupName, mode)
     const dayIndex = getWeekDayIndex(dayDate)
     return week.days![dayIndex] ?? { lessons: [], slots: [] }
@@ -36,8 +46,10 @@ export class ScheduleService {
 
     const thisWeekDate = new Date()
 
-    return this.cacheOrCompute(cacheKey, isSameWeek(thisWeekDate, weekDate), () =>
-      this.teacherSchedule.getTeacherWeek(teacherId, weekDate)
+    return this.cacheOrCompute(
+      cacheKey,
+      isSameWeek(thisWeekDate, weekDate),
+      () => this.teacherSchedule.getTeacherWeek(teacherId, weekDate),
     )
   }
 
@@ -79,8 +91,8 @@ export class ScheduleService {
         skipDuplicates: false,
       })
     } catch (e) {
-      if (e.code === "P2003") {
-        throw new NotFoundException("One or more groups not found")
+      if (e.code === 'P2003') {
+        throw new NotFoundException('One or more groups not found')
       }
       throw e
     }

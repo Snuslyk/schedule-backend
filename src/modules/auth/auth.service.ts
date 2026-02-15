@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { JwtPayload } from './interfaces/jwt.interface'
@@ -23,16 +28,18 @@ export class AuthService {
     private readonly prismaService: PrismaService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
-    private readonly avatarService: AvatarService
+    private readonly avatarService: AvatarService,
   ) {
     this.JWT_ACCESS_TOKEN_TTL = configService.getOrThrow('JWT_ACCESS_TOKEN_TTL')
-    this.JWT_REFRESH_TOKEN_TTL = configService.getOrThrow('JWT_REFRESH_TOKEN_TTL')
+    this.JWT_REFRESH_TOKEN_TTL = configService.getOrThrow(
+      'JWT_REFRESH_TOKEN_TTL',
+    )
     this.COOKIE_DOMAIN = configService.getOrThrow('COOKIE_DOMAIN')
   }
 
   async register(res: Response, dto: UserRegisterDto) {
     const existUser = await this.prismaService.user.findUnique({
-      where: { email: dto.email }
+      where: { email: dto.email },
     })
 
     if (existUser) {
@@ -44,8 +51,8 @@ export class AuthService {
         name: dto.name,
         email: dto.email,
         password: await password.hash(dto.password),
-        roles: dto.roles
-      }
+        roles: dto.roles,
+      },
     })
 
     return this.auth(res, user.id, user.roles)
@@ -57,22 +64,24 @@ export class AuthService {
       select: {
         id: true,
         password: true,
-        roles: true
-      }
+        roles: true,
+      },
     })
 
     if (!user) {
       throw new NotFoundException('User not found')
     }
 
-    const isValidPassword: boolean = await password.verify(dto.password, user.password!)
+    const isValidPassword: boolean = await password.verify(
+      dto.password,
+      user.password!,
+    )
 
     if (!isValidPassword) {
       throw new NotFoundException('User not found')
     }
 
     return this.auth(res, user.id!, user.roles!)
-
   }
 
   async refresh(req: Request, res: Response) {
@@ -118,7 +127,7 @@ export class AuthService {
   roles(id: string, role: Role) {
     return this.prismaService.user.update({
       where: { id },
-      data: { roles: [ role ] }
+      data: { roles: [role] },
     })
   }
 
@@ -128,27 +137,26 @@ export class AuthService {
       domain: this.COOKIE_DOMAIN,
       expires,
       secure: !isDev(this.configService),
-      sameSite: !isDev(this.configService) ? 'none' : 'lax'
+      sameSite: !isDev(this.configService) ? 'none' : 'lax',
     })
   }
 
   async getProfile(user: User) {
-
     const avatarUrl = await this.avatarService.getAvatarUrl(user.id)
 
     return {
       name: user.name,
       email: user.email,
       roles: user.roles,
-      avatar: avatarUrl
+      avatar: avatarUrl,
     }
   }
 
   async validate(id: string) {
     const user: User | null = await this.prismaService.user.findUnique({
       where: {
-        id
-      }
+        id,
+      },
     })
 
     if (!user) {
@@ -162,18 +170,16 @@ export class AuthService {
     const payload: JwtPayload = { id, roles }
 
     const accessToken = this.jwtService.sign(payload, {
-      expiresIn: this.JWT_ACCESS_TOKEN_TTL
+      expiresIn: this.JWT_ACCESS_TOKEN_TTL,
     })
 
     const refreshToken = this.jwtService.sign(payload, {
-      expiresIn: this.JWT_REFRESH_TOKEN_TTL
+      expiresIn: this.JWT_REFRESH_TOKEN_TTL,
     })
 
     return {
       accessToken,
-      refreshToken
+      refreshToken,
     }
   }
-
-
 }

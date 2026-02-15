@@ -1,4 +1,4 @@
-import { IsNumber, IsDate, IsString, IsBoolean } from "class-validator"
+import { IsNumber, IsDate, IsString, IsBoolean } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 
 export class ReplaceDto {
@@ -16,7 +16,7 @@ export class CreateReplaceDto {
     description: 'Date of the replacement',
     example: '2026-02-15T08:30:00.000Z',
     type: String,
-    format: 'date-time'
+    format: 'date-time',
   })
   @IsDate()
   date: Date
@@ -24,7 +24,7 @@ export class CreateReplaceDto {
   @ApiProperty({
     description: 'Slot number of the replacement',
     example: 2,
-    type: Number
+    type: Number,
   })
   @IsNumber()
   slotNumber: number
@@ -32,7 +32,7 @@ export class CreateReplaceDto {
   @ApiProperty({
     description: 'Classroom where the replacement will occur',
     example: '101',
-    type: String
+    type: String,
   })
   @IsString()
   classroom: string
@@ -40,7 +40,7 @@ export class CreateReplaceDto {
   @ApiProperty({
     description: 'Indicates whether the slot is available',
     example: true,
-    type: Boolean
+    type: Boolean,
   })
   @IsBoolean()
   isAvailable: boolean
@@ -48,7 +48,7 @@ export class CreateReplaceDto {
   @ApiProperty({
     description: 'ID of the teacher for this replacement',
     example: 5,
-    type: Number
+    type: Number,
   })
   @IsNumber()
   teacherId: number
@@ -56,7 +56,7 @@ export class CreateReplaceDto {
   @ApiProperty({
     description: 'ID of the subject for this replacement',
     example: 3,
-    type: Number
+    type: Number,
   })
   @IsNumber()
   subjectId: number

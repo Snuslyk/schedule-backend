@@ -1,8 +1,8 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common'
-import { OrganizationService } from "./organization.service"
-import { CreateOrganizationDto } from "./organization.dto"
+import { OrganizationService } from './organization.service'
+import { CreateOrganizationDto } from './organization.dto'
 
-@Controller("organization")
+@Controller('organization')
 export class OrganizationController {
   constructor(private readonly organizationService: OrganizationService) {}
 
@@ -12,7 +12,7 @@ export class OrganizationController {
     return this.organizationService.create(data)
   }
 
-  @Post("bulk")
+  @Post('bulk')
   @HttpCode(HttpStatus.CREATED)
   createMany(@Body() data: CreateOrganizationDto[]) {
     return this.organizationService.createMany(data)

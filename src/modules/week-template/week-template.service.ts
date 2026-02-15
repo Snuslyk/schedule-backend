@@ -3,10 +3,10 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
-} from "@nestjs/common"
-import { PrismaService } from "../../prisma/prisma.service"
-import { CreateWeekTemplateDto, WeekTemplateDto } from "./week-template.dto"
-import { plainToInstance } from "class-transformer"
+} from '@nestjs/common'
+import { PrismaService } from '../../prisma/prisma.service'
+import { CreateWeekTemplateDto, WeekTemplateDto } from './week-template.dto'
+import { plainToInstance } from 'class-transformer'
 
 @Injectable()
 export class WeekTemplateService {
@@ -88,13 +88,13 @@ export class WeekTemplateService {
         },
       })
     } catch (e) {
-      if (e.code === "P2003") {
+      if (e.code === 'P2003') {
         throw new NotFoundException(
           `Schedule with id ${group.schedule.id} not found`,
         )
       }
-      if (e.code === "P2002") {
-        throw new ConflictException("Duplicate entry detected")
+      if (e.code === 'P2002') {
+        throw new ConflictException('Duplicate entry detected')
       }
       throw e
     }
@@ -115,7 +115,7 @@ export class WeekTemplateService {
     try {
       await this.prisma.weekTemplate.delete({ where: { id: id } })
     } catch (e) {
-      if (e.code === "P2025") {
+      if (e.code === 'P2025') {
         throw new NotFoundException(`Week Template with id ${id} not found`)
       }
       throw e

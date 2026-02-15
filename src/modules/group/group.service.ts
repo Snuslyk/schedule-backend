@@ -2,9 +2,9 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
-} from "@nestjs/common"
-import { PrismaService } from "../../prisma/prisma.service"
-import { CreateGroupDto, GroupDto } from "./group.dto"
+} from '@nestjs/common'
+import { PrismaService } from '../../prisma/prisma.service'
+import { CreateGroupDto, GroupDto } from './group.dto'
 
 @Injectable()
 export class GroupService {
@@ -39,7 +39,7 @@ export class GroupService {
         },
       })
     } catch (e) {
-      if (e.code === "P2002") {
+      if (e.code === 'P2002') {
         throw new ConflictException(
           `Group with name ${dto.name} already exists`,
         )
@@ -57,8 +57,8 @@ export class GroupService {
         skipDuplicates: false,
       })
     } catch (e) {
-      if (e.code === "P2002") {
-        throw new ConflictException("One or more groups already exist")
+      if (e.code === 'P2002') {
+        throw new ConflictException('One or more groups already exist')
       }
       throw e
     }
@@ -68,7 +68,7 @@ export class GroupService {
     try {
       await this.prisma.group.delete({ where: { id: id } })
     } catch (e) {
-      if (e.code === "P2025") {
+      if (e.code === 'P2025') {
         throw new NotFoundException(`Group with id ${id} not found`)
       }
       throw e
@@ -79,7 +79,7 @@ export class GroupService {
     try {
       await this.prisma.group.delete({ where: { name: name } })
     } catch (e) {
-      if (e.code === "P2025") {
+      if (e.code === 'P2025') {
         throw new NotFoundException(`Group with name ${name} not found`)
       }
       throw e

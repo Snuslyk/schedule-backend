@@ -1,4 +1,4 @@
-import { WeekType } from "../../generated/prisma/enums"
+import { WeekType } from '../../generated/prisma/enums'
 
 export function startOfWeek(date: Date): Date {
   const d = new Date(date)

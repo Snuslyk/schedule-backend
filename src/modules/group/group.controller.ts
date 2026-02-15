@@ -3,19 +3,22 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode, HttpStatus,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
 } from '@nestjs/common'
-import { GroupService } from "./group.service"
-import { CreateGroupDto } from "./group.dto"
+import { GroupService } from './group.service'
+import { CreateGroupDto } from './group.dto'
 import { Authorization } from '../auth/decorators/authorization.decorator'
 import { IsAdmin } from '../auth/decorators/is-admin.decorator'
 import {
-  ApiBearerAuth, ApiBody,
+  ApiBearerAuth,
+  ApiBody,
   ApiOperation,
-  ApiParam, ApiTags,
+  ApiParam,
+  ApiTags,
 } from '@nestjs/swagger'
 
 @ApiTags('Group')

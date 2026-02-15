@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString } from 'class-validator'
-import { LessonDto } from "../lesson/lesson.dto"
+import { LessonDto } from '../lesson/lesson.dto'
 import { ApiProperty } from '@nestjs/swagger'
 
 export class TeacherDto {
@@ -11,7 +11,7 @@ export class TeacherDto {
 export class CreateTeacherDto {
   @ApiProperty({
     description: 'Name of the teacher',
-    example: 'John Doe'
+    example: 'John Doe',
   })
   @IsString()
   @IsNotEmpty()

@@ -21,14 +21,17 @@ export class AvatarController {
   @ApiOperation({ summary: 'Avatar uploading to yandex bucket' })
   @File('avatar')
   async uploadAvatar(
-    @UploadedFile(new ParseFilePipe({
-      fileIsRequired: true,
-      validators: [
-        new MaxFileSizeValidator({ maxSize: 2097152 }),
-        new FileTypeValidator({ fileType: /image\/(jpeg|jpg|png|webp)/ })
-      ]
-    })) file: Express.Multer.File,
-    @Authorized('id') id: string
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: true,
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 2097152 }),
+          new FileTypeValidator({ fileType: /image\/(jpeg|jpg|png|webp)/ }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+    @Authorized('id') id: string,
   ) {
     await this.avatarService.upload(id, file.buffer)
   }

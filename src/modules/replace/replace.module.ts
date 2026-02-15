@@ -1,6 +1,6 @@
-import { Module } from "@nestjs/common"
-import { ReplaceService } from "./replace.service"
-import { ReplaceController } from "./replace.controller"
+import { Module } from '@nestjs/common'
+import { ReplaceService } from './replace.service'
+import { ReplaceController } from './replace.controller'
 
 @Module({
   controllers: [ReplaceController],

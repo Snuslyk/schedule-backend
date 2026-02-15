@@ -1,6 +1,6 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common'
-import { PrismaService } from "../../prisma/prisma.service"
-import { CreateReplaceDto } from "./replace.dto"
+import { PrismaService } from '../../prisma/prisma.service'
+import { CreateReplaceDto } from './replace.dto'
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager'
 import { isSameWeek } from '../../utils/date'
 
@@ -8,7 +8,7 @@ import { isSameWeek } from '../../utils/date'
 export class ReplaceService {
   constructor(
     private readonly prisma: PrismaService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async create(dto: CreateReplaceDto, groupName: string) {
@@ -72,9 +72,7 @@ export class ReplaceService {
     const scheduleId = group.schedule.id
 
     const thisWeek = new Date()
-    if (dtos.some(dto =>
-      isSameWeek(thisWeek, dto.date)
-    )) {
+    if (dtos.some((dto) => isSameWeek(thisWeek, dto.date))) {
       await this.cacheManager.del(groupName)
     }
 

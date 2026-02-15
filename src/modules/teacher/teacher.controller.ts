@@ -5,10 +5,12 @@ import {
   Body,
   Param,
   Delete,
-  ParseIntPipe, HttpCode, HttpStatus,
+  ParseIntPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common'
-import { TeacherService } from "./teacher.service"
-import { CreateTeacherDto } from "./teacher.dto"
+import { TeacherService } from './teacher.service'
+import { CreateTeacherDto } from './teacher.dto'
 import { ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 
 @ApiTags('Teacher')

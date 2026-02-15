@@ -1,15 +1,15 @@
 import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
-} from "class-validator"
+} from 'class-validator'
 
-@ValidatorConstraint({ name: "EvenOrOdd", async: false })
+@ValidatorConstraint({ name: 'EvenOrOdd', async: false })
 export class EvenOrOddWeekConstraint implements ValidatorConstraintInterface {
   validate(days: any[]): Promise<boolean> | boolean {
-    return Array.isArray(days) && (days.length === 7)
+    return Array.isArray(days) && days.length === 7
   }
 
   defaultMessage(): string {
-    return "There must be exactly 7"
+    return 'There must be exactly 7'
   }
 }

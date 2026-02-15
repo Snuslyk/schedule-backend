@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable } from "@nestjs/common"
-import { PrismaService } from "../../../prisma/prisma.service"
+import { BadRequestException, Injectable } from '@nestjs/common'
+import { PrismaService } from '../../../prisma/prisma.service'
 import {
   getEndOfWeek,
   getWeekDayIndex,
@@ -7,13 +7,13 @@ import {
   isDateInRange,
   isWeekDayInRange,
   startOfWeek,
-} from "../../../utils/date"
-import { ScheduleDto } from "../schedule.dto"
-import { WeekTemplateDto } from "../../week-template/week-template.dto"
-import { ReplaceDto } from "../../replace/replace.dto"
-import { GroupDto } from "../../group/group.dto"
-import { WeekType } from "../../../../generated/prisma/enums"
-import { DayDto } from "../../day/day.dto"
+} from '../../../utils/date'
+import { ScheduleDto } from '../schedule.dto'
+import { WeekTemplateDto } from '../../week-template/week-template.dto'
+import { ReplaceDto } from '../../replace/replace.dto'
+import { GroupDto } from '../../group/group.dto'
+import { WeekType } from '../../../../generated/prisma/enums'
+import { DayDto } from '../../day/day.dto'
 
 @Injectable()
 export class GroupScheduleService {
@@ -22,7 +22,7 @@ export class GroupScheduleService {
   async getGroupDay(
     date: Date,
     groupName: string,
-    mode: "parity" | "other",
+    mode: 'parity' | 'other',
   ): Promise<DayDto> {
     const week = await this.getGroupWeek(date, groupName, mode)
     const dayIndex = getWeekDayIndex(date)
@@ -34,7 +34,7 @@ export class GroupScheduleService {
   async getGroupWeek(
     dayOfWeek: Date,
     groupName: string,
-    mode: "parity" | "other",
+    mode: 'parity' | 'other',
   ) {
     const startOfWeekDate = startOfWeek(dayOfWeek)
 
@@ -46,7 +46,7 @@ export class GroupScheduleService {
     )
 
     const week =
-      mode === "parity"
+      mode === 'parity'
         ? this.getParityWeekTemplate(schedule, startOfWeekDate)
         : this.getOtherWeekTemplate(schedule)
 

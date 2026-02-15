@@ -1,16 +1,14 @@
 import {
   Body,
   Controller,
-  Get, HttpCode, HttpStatus,
+  Get,
+  HttpCode,
+  HttpStatus,
   Post,
 } from '@nestjs/common'
-import { SubjectService } from "./subject.service"
-import { CreateSubjectDto } from "./subject.dto"
-import {
-  ApiBody,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger'
+import { SubjectService } from './subject.service'
+import { CreateSubjectDto } from './subject.dto'
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
 
 @ApiTags('Subject')
 @Controller('subject')

@@ -8,11 +8,11 @@ export class UserPipe implements PipeTransform {
 
   async transform(id: string) {
     const user: User | null = await this.prismaService.user.findUnique({
-      where: { id }
+      where: { id },
     })
 
     if (!user) throw new NotFoundException(`User with id ${id} not found`)
 
-    return id;
+    return id
   }
 }

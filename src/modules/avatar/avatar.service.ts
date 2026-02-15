@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import {
-  GetObjectCommand, HeadObjectCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3'
@@ -17,7 +18,7 @@ export class AvatarService {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
   ) {
     this.S3_BUCKET = configService.getOrThrow('S3_BUCKET')
     this.AWS_S3_REGION = configService.getOrThrow('AWS_S3_REGION')
@@ -46,7 +47,7 @@ export class AvatarService {
   async getAvatarUrl(id: string) {
     const headCommand = new HeadObjectCommand({
       Bucket: this.S3_BUCKET,
-      Key: `avatars/${id}.webp`
+      Key: `avatars/${id}.webp`,
     })
 
     try {
@@ -60,7 +61,7 @@ export class AvatarService {
 
     const command = new GetObjectCommand({
       Bucket: this.S3_BUCKET,
-      Key: `avatars/${id}.webp`
+      Key: `avatars/${id}.webp`,
     })
 
     return await getSignedUrl(this.s3Client, command, { expiresIn: 60 })
