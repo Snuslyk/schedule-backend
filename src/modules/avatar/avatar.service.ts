@@ -28,8 +28,14 @@ export class AvatarService {
     })
   }
 
-  async upload(id: string, file: Buffer) {
+  async upload(id: string, file: Buffer, cropData: { x: number, y: number, size: number }) {
     const compressedImage: Buffer = await sharp(file)
+      .extract({
+        top: cropData.y,
+        left: cropData.x,
+        width: cropData.size,
+        height: cropData.size
+      })
       .resize(512, 512, { fit: 'inside' })
       .webp({ quality: 70 })
       .toBuffer()

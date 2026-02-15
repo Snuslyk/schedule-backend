@@ -1,4 +1,6 @@
 import {
+  BadRequestException,
+  Body,
   Controller,
   FileTypeValidator,
   MaxFileSizeValidator,
@@ -32,7 +34,15 @@ export class AvatarController {
     )
     file: Express.Multer.File,
     @Authorized('id') id: string,
+    @Body('cropData') cropDataString: string
   ) {
-    await this.avatarService.upload(id, file.buffer)
+    let cropData: { x: number; y: number; size: number }
+    try {
+      cropData = JSON.parse(cropDataString) as { x: number; y: number; size: number }
+    } catch (e) {
+      throw new BadRequestException()
+    }
+
+    await this.avatarService.upload(id, file.buffer, cropData)
   }
 }
