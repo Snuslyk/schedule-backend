@@ -22,7 +22,7 @@ export class AvatarController {
     @UploadedFile(new ParseFilePipe({
       fileIsRequired: true,
       validators: [
-        new MaxFileSizeValidator({ maxSize: 3000000 }),
+        new MaxFileSizeValidator({ maxSize: 2097152 }),
         new FileTypeValidator({ fileType: /image\/(jpeg|jpg|png|webp)/ })
       ]
     })) file: Express.Multer.File,
