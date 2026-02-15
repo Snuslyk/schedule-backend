@@ -17,26 +17,26 @@ export class ScheduleService {
 
   async getGroupWeek(
     weekDate: Date,
-    groupName: string,
+    groupId: number,
     mode: 'parity' | 'other',
   ) {
-    const cacheKey = `group_week:${groupName}`
+    const cacheKey = `group_week:${groupId}`
 
     const thisWeekDate = new Date()
 
     return this.cacheOrCompute(
       cacheKey,
       isSameWeek(thisWeekDate, weekDate),
-      () => this.groupSchedule.getGroupWeek(weekDate, groupName, mode),
+      () => this.groupSchedule.getGroupWeek(weekDate, groupId, mode),
     )
   }
 
   async getGroupDay(
     dayDate: Date,
-    groupName: string,
+    groupId: number,
     mode: 'parity' | 'other',
   ) {
-    const week = await this.getGroupWeek(dayDate, groupName, mode)
+    const week = await this.getGroupWeek(dayDate, groupId, mode)
     const dayIndex = getWeekDayIndex(dayDate)
     return week.days![dayIndex] ?? { lessons: [], slots: [] }
   }

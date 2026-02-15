@@ -7,7 +7,7 @@ import {
   HttpStatus,
   Param,
   ParseIntPipe,
-  Post,
+  Post, UseGuards,
 } from '@nestjs/common'
 import { GroupService } from './group.service'
 import { CreateGroupDto } from './group.dto'
@@ -20,6 +20,10 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger'
+import { AuthGuard } from '@nestjs/passport'
+import { AdminGuard } from '../auth/guards/admin.guard'
+import { JwtGuard } from '../auth/guards/auth.guard'
+import { AuthorizationAdmin } from '../auth/decorators/authorization-admin.decorator'
 
 @ApiTags('Group')
 @Controller('group')
@@ -42,8 +46,7 @@ export class GroupController {
     return this.groupService.getByName(name)
   }
 
-  @Authorization()
-  @IsAdmin()
+  @AuthorizationAdmin()
   @ApiBearerAuth()
   @Post()
   @ApiOperation({ summary: 'Create new group (admin only)' })

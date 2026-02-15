@@ -12,11 +12,11 @@ import { plainToInstance } from 'class-transformer'
 export class WeekTemplateService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(dto: CreateWeekTemplateDto, groupName: string) {
+  async create(dto: CreateWeekTemplateDto, groupId: number) {
     let weekTemplate: CreateWeekTemplateDto
 
     const group = await this.prisma.group.findUnique({
-      where: { name: groupName },
+      where: { id: groupId },
       select: {
         schedule: {
           select: { id: true },
@@ -25,12 +25,12 @@ export class WeekTemplateService {
     })
 
     if (!group) {
-      throw new BadRequestException(`There is no group with name ${groupName}!`)
+      throw new BadRequestException(`There is no group with id ${groupId}!`)
     }
 
     if (!group.schedule) {
       throw new BadRequestException(
-        `There is no schedule with group name ${groupName}!`,
+        `There is no schedule with group id ${groupId}!`,
       )
     }
 
@@ -102,10 +102,10 @@ export class WeekTemplateService {
     return plainToInstance(WeekTemplateDto, weekTemplate)
   }
 
-  async createMany(dtos: CreateWeekTemplateDto[], groupName: string) {
+  async createMany(dtos: CreateWeekTemplateDto[], groupId: number) {
     const results: WeekTemplateDto[] = []
     for (const dto of dtos) {
-      const created = await this.create(dto, groupName)
+      const created = await this.create(dto, groupId)
       results.push(created)
     }
     return results

@@ -26,7 +26,7 @@ export class ScheduleController {
     type: String,
     description: 'Start date of the week (YYYY-MM-DD)',
   })
-  @ApiQuery({ name: 'group', type: String, description: 'Group name' })
+  @ApiQuery({ name: 'id', type: Number, description: 'Group ID' })
   @ApiQuery({
     name: 'mode',
     type: String,
@@ -36,16 +36,16 @@ export class ScheduleController {
   @HttpCode(HttpStatus.OK)
   getGroupWeek(
     @Query('week', DatePipe) week: Date,
-    @Query('group') group: string,
+    @Query('id', ParseIntPipe) groupId: number,
     @Query('mode', ModePipe) mode: 'parity' | 'other',
   ) {
-    return this.scheduleService.getGroupWeek(week, group, mode)
+    return this.scheduleService.getGroupWeek(week, groupId, mode)
   }
 
   @Get('day/group')
   @ApiOperation({ summary: 'Get daily schedule for a group' })
   @ApiQuery({ name: 'day', type: String, description: 'Date (YYYY-MM-DD)' })
-  @ApiQuery({ name: 'group', type: String, description: 'Group name' })
+  @ApiQuery({ name: 'id', type: Number, description: 'Group ID' })
   @ApiQuery({
     name: 'mode',
     type: String,
@@ -55,10 +55,10 @@ export class ScheduleController {
   @HttpCode(HttpStatus.OK)
   getParityGroupDay(
     @Query('day', DatePipe) day: Date,
-    @Query('group') group: string,
+    @Query('id', ParseIntPipe) groupId: number,
     @Query('mode', ModePipe) mode: 'parity' | 'other',
   ) {
-    return this.scheduleService.getGroupDay(day, group, mode)
+    return this.scheduleService.getGroupDay(day, groupId, mode)
   }
 
   @Get('week/teacher')

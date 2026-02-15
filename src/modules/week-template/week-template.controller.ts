@@ -17,35 +17,35 @@ import { ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 export class WeekTemplateController {
   constructor(private readonly weekTemplateService: WeekTemplateService) {}
 
-  @Post(':name')
+  @Post(':id')
   @ApiOperation({ summary: 'Create a week template for a group' })
   @ApiParam({
-    name: 'name',
-    type: String,
-    description: 'Group name',
-    example: '11A',
+    name: 'id',
+    type: Number,
+    description: 'Group ID',
+    example: 1,
   })
   @ApiBody({ type: CreateWeekTemplateDto })
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() dto: CreateWeekTemplateDto, @Param('name') group: string) {
-    return this.weekTemplateService.create(dto, group)
+  create(@Body() dto: CreateWeekTemplateDto, @Param('id', ParseIntPipe) groupId: number) {
+    return this.weekTemplateService.create(dto, groupId)
   }
 
-  @Post(':name/bulk')
+  @Post(':id/bulk')
   @ApiOperation({ summary: 'Create multiple week templates for a group' })
   @ApiParam({
-    name: 'name',
-    type: String,
-    description: 'Group name',
-    example: '11A',
+    name: 'id',
+    type: Number,
+    description: 'Group ID',
+    example: 1,
   })
   @ApiBody({ type: [CreateWeekTemplateDto] })
   @HttpCode(HttpStatus.CREATED)
   createMany(
     @Body() dtos: CreateWeekTemplateDto[],
-    @Param('name') group: string,
+    @Param('id', ParseIntPipe) groupId: number,
   ) {
-    return this.weekTemplateService.createMany(dtos, group)
+    return this.weekTemplateService.createMany(dtos, groupId)
   }
 
   @Delete(':id')

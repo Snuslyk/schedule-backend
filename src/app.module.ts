@@ -3,7 +3,6 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { SubjectModule } from './modules/subject/subject.module'
 import { ConfigModule } from '@nestjs/config'
-import { ConceptionMiddleware } from './conception/conception.middleware'
 import { OrganizationModule } from './modules/organization/organization.module'
 import { PrismaModule } from './prisma/prisma.module'
 import { ScheduleModule } from './modules/schedule/schedule.module'
@@ -44,8 +43,4 @@ import { AvatarModule } from './modules/avatar/avatar.module'
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(ConceptionMiddleware).forRoutes('subjects')
-  }
-}
+export class AppModule {}

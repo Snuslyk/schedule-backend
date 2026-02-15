@@ -21,10 +21,10 @@ export class GroupScheduleService {
 
   async getGroupDay(
     date: Date,
-    groupName: string,
+    groupId: number,
     mode: 'parity' | 'other',
   ): Promise<DayDto> {
-    const week = await this.getGroupWeek(date, groupName, mode)
+    const week = await this.getGroupWeek(date, groupId, mode)
     const dayIndex = getWeekDayIndex(date)
     const day = week.days![dayIndex]
 
@@ -33,15 +33,14 @@ export class GroupScheduleService {
 
   async getGroupWeek(
     dayOfWeek: Date,
-    groupName: string,
+    groupId: number,
     mode: 'parity' | 'other',
   ) {
     const startOfWeekDate = startOfWeek(dayOfWeek)
 
-    const group: GroupDto = await this.getGroup(groupName)
+    const group: GroupDto = await this.getGroup(groupId)
     const schedule: ScheduleDto = await this.getSchedule(
       group.id!,
-      groupName,
       startOfWeekDate,
     )
 
@@ -53,25 +52,24 @@ export class GroupScheduleService {
     this.applyScheduleRange(week, startOfWeekDate, schedule)
 
     const replaces = this.getWeekReplaces(schedule)
-    console.log(replaces)
     this.applyReplaces(week, replaces)
 
     return week
   }
 
-  private async getGroup(groupName: string) {
+  private async getGroup(groupId: number) {
     const group = await this.prisma.group.findUnique({
-      where: { name: groupName },
+      where: { id: groupId },
     })
 
     if (!group) {
-      throw new BadRequestException(`There is no group with name ${groupName}!`)
+      throw new BadRequestException(`There is no group with id ${groupId}!`)
     }
 
     return group
   }
 
-  private async getSchedule(groupId: number, groupName: string, start: Date) {
+  private async getSchedule(groupId: number, start: Date) {
     const schedule = await this.prisma.schedule.findUnique({
       where: { groupId },
       include: {
@@ -116,7 +114,7 @@ export class GroupScheduleService {
 
     if (!schedule) {
       throw new BadRequestException(
-        `There is no schedule with this group name ${groupName}!`,
+        `There is no schedule with this group id ${groupId}!`,
       )
     }
 
