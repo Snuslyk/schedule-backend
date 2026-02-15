@@ -3,7 +3,7 @@ import {
   FileTypeValidator,
   MaxFileSizeValidator,
   ParseFilePipe,
-  Post, Query,
+  Post,
   UploadedFile,
 } from '@nestjs/common'
 import { AvatarService } from './avatar.service'
