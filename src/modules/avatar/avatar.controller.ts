@@ -10,6 +10,7 @@ import { AvatarService } from './avatar.service'
 import { File } from './decorators/avatar.decorator'
 import { Authorized } from '../auth/decorators/authorized.decorator'
 import { Authorization } from '../auth/decorators/authorization.decorator'
+import { ApiOperation } from '@nestjs/swagger'
 
 @Controller('avatar')
 export class AvatarController {
@@ -17,6 +18,7 @@ export class AvatarController {
 
   @Authorization()
   @Post()
+  @ApiOperation({ summary: 'Avatar uploading to yandex bucket' })
   @File('avatar')
   async uploadAvatar(
     @UploadedFile(new ParseFilePipe({

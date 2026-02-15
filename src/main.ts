@@ -15,6 +15,7 @@ async function bootstrap() {
     .setVersion("1.0")
     .addTag("schedule")
     .addBearerAuth()
+    .addCookieAuth('accessToken')
     .build()
   const document = SwaggerModule.createDocument(app, config)
   app.use("/docs", apiReference({ content: document, theme: "default" }))

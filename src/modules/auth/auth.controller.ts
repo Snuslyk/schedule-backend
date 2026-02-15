@@ -61,10 +61,12 @@ export class AuthController {
     return this.authService.logout(res)
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @Authorization()
   @Get('profile')
+  @ApiOperation({ summary: 'Get logged user profile' })
+  @ApiCookieAuth()
   @HttpCode(HttpStatus.OK)
-  async getProfile(@Authorized() user: User) {
+  async getMyProfile(@Authorized() user: User) {
     return await this.authService.getProfile(user)
   }
 
