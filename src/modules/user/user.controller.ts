@@ -28,8 +28,8 @@ import type { User } from '../../../generated/prisma/client'
 import { File } from './decorators/avatar.decorator'
 import { AvatarService } from './services/avatar.service'
 
-@ApiTags('Auth')
-@Controller('auth')
+@ApiTags('User')
+@Controller('user')
 export class UserController {
   constructor(
     private readonly authService: UserService,
