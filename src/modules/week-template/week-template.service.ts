@@ -7,6 +7,7 @@ import {
 import { PrismaService } from '../../prisma/prisma.service'
 import { CreateWeekTemplateDto, WeekTemplateDto } from './week-template.dto'
 import { plainToInstance } from 'class-transformer'
+import { Mode, WeekType } from '../../../generated/prisma/enums'
 
 @Injectable()
 export class WeekTemplateService {
@@ -19,7 +20,7 @@ export class WeekTemplateService {
       where: { id: groupId },
       select: {
         schedule: {
-          select: { id: true },
+          select: { id: true, mode: true },
         },
       },
     })
@@ -32,6 +33,14 @@ export class WeekTemplateService {
       throw new BadRequestException(
         `There is no schedule with group id ${groupId}!`,
       )
+    }
+
+    const dtoMode: Mode = dto.type === WeekType.OTHER
+      ? Mode.OTHER
+      : Mode.PARITY
+
+    if (group.schedule.mode !== dtoMode) {
+      throw new ConflictException(`Schedule mode is ${group.schedule.mode}, and your week type is ${dtoMode}`)
     }
 
     try {

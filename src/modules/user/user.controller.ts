@@ -1,16 +1,17 @@
 import {
+  BadRequestException,
   Body,
-  Controller,
+  Controller, FileTypeValidator,
   Get,
   HttpCode,
-  HttpStatus,
+  HttpStatus, MaxFileSizeValidator, ParseFilePipe,
   Post,
   Query,
   Req,
-  Res,
+  Res, UploadedFile,
 } from '@nestjs/common'
-import { AuthService } from './auth.service'
-import { UserRegisterDto, UserLoginDto } from './auth.dto'
+import { UserService } from './services/user.service'
+import { UserRegisterDto, UserLoginDto } from './user.dto'
 import type { Response, Request } from 'express'
 import { Authorization } from './decorators/authorization.decorator'
 import { IsAdmin } from './decorators/is-admin.decorator'
@@ -24,11 +25,16 @@ import {
 } from '@nestjs/swagger'
 import { Authorized } from './decorators/authorized.decorator'
 import type { User } from '../../../generated/prisma/client'
+import { File } from './decorators/avatar.decorator'
+import { AvatarService } from './services/avatar.service'
 
 @ApiTags('Auth')
 @Controller('auth')
-export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+export class UserController {
+  constructor(
+    private readonly authService: UserService,
+    private readonly avatarService: AvatarService
+  ) {}
 
   //@Authorization()
   //@IsAdmin()
@@ -88,5 +94,33 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   addRole(@Query('id') id: string, @Query('role') role: Role) {
     return this.authService.roles(id, role)
+  }
+
+  @Authorization()
+  @Post('avatar')
+  @ApiOperation({ summary: 'Avatar uploading to yandex bucket' })
+  @File('avatar')
+  async uploadAvatar(
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: true,
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 2097152 }),
+          new FileTypeValidator({ fileType: /image\/(jpeg|jpg|png|webp)/ }),
+        ],
+      }),
+    )
+      file: Express.Multer.File,
+    @Authorized('id') id: string,
+    @Body('cropData') cropDataString: string
+  ) {
+    let cropData: { x: number; y: number; size: number }
+    try {
+      cropData = JSON.parse(cropDataString) as { x: number; y: number; size: number }
+    } catch (e) {
+      throw new BadRequestException()
+    }
+
+    await this.avatarService.upload(id, file.buffer, cropData)
   }
 }

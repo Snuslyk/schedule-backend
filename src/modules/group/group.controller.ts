@@ -11,8 +11,8 @@ import {
 } from '@nestjs/common'
 import { GroupService } from './group.service'
 import { CreateGroupDto } from './group.dto'
-import { Authorization } from '../auth/decorators/authorization.decorator'
-import { IsAdmin } from '../auth/decorators/is-admin.decorator'
+import { Authorization } from '../user/decorators/authorization.decorator'
+import { IsAdmin } from '../user/decorators/is-admin.decorator'
 import {
   ApiBearerAuth,
   ApiBody,
@@ -21,9 +21,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 import { AuthGuard } from '@nestjs/passport'
-import { AdminGuard } from '../auth/guards/admin.guard'
-import { JwtGuard } from '../auth/guards/auth.guard'
-import { AuthorizationAdmin } from '../auth/decorators/authorization-admin.decorator'
+import { AdminGuard } from '../user/guards/admin.guard'
+import { JwtGuard } from '../user/guards/auth.guard'
+import { AuthorizationAdmin } from '../user/decorators/authorization-admin.decorator'
 
 @ApiTags('Group')
 @Controller('group')

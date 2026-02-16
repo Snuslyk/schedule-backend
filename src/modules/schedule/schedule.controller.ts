@@ -13,6 +13,7 @@ import { DatePipe } from '../../date/date.pipe'
 import { CreateScheduleDto } from './schedule.dto'
 import { ModePipe } from './mode/mode.pipe'
 import { ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { Mode } from '../../../generated/prisma/enums'
 
 @ApiTags('Schedule')
 @Controller('schedule')
@@ -27,38 +28,24 @@ export class ScheduleController {
     description: 'Start date of the week (YYYY-MM-DD)',
   })
   @ApiQuery({ name: 'id', type: Number, description: 'Group ID' })
-  @ApiQuery({
-    name: 'mode',
-    type: String,
-    enum: ['parity', 'other'],
-    description: 'Schedule mode',
-  })
   @HttpCode(HttpStatus.OK)
   getGroupWeek(
     @Query('week', DatePipe) week: Date,
     @Query('id', ParseIntPipe) groupId: number,
-    @Query('mode', ModePipe) mode: 'parity' | 'other',
   ) {
-    return this.scheduleService.getGroupWeek(week, groupId, mode)
+    return this.scheduleService.getGroupWeek(week, groupId)
   }
 
   @Get('day/group')
   @ApiOperation({ summary: 'Get daily schedule for a group' })
   @ApiQuery({ name: 'day', type: String, description: 'Date (YYYY-MM-DD)' })
   @ApiQuery({ name: 'id', type: Number, description: 'Group ID' })
-  @ApiQuery({
-    name: 'mode',
-    type: String,
-    enum: ['parity', 'other'],
-    description: 'Schedule mode',
-  })
   @HttpCode(HttpStatus.OK)
   getParityGroupDay(
     @Query('day', DatePipe) day: Date,
     @Query('id', ParseIntPipe) groupId: number,
-    @Query('mode', ModePipe) mode: 'parity' | 'other',
   ) {
-    return this.scheduleService.getGroupDay(day, groupId, mode)
+    return this.scheduleService.getGroupDay(day, groupId)
   }
 
   @Get('week/teacher')

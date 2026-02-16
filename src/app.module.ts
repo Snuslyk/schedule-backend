@@ -13,9 +13,8 @@ import { LessonModule } from './modules/lesson/lesson.module'
 import { TeacherModule } from './modules/teacher/teacher.module'
 import { ReplaceModule } from './modules/replace/replace.module'
 import { OwnerModule } from './modules/owner/owner.module'
-import { AuthModule } from './modules/auth/auth.module'
+import { UserModule } from './modules/user/user.module'
 import { CacheModule } from '@nestjs/cache-manager'
-import { AvatarModule } from './modules/avatar/avatar.module'
 
 @Module({
   imports: [
@@ -37,8 +36,7 @@ import { AvatarModule } from './modules/avatar/avatar.module'
     TeacherModule,
     ReplaceModule,
     OwnerModule,
-    AuthModule,
-    AvatarModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

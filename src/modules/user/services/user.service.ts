@@ -6,19 +6,19 @@ import {
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
-import { JwtPayload } from './interfaces/jwt.interface'
+import { JwtPayload } from '../interfaces/jwt.interface'
 import ms, { StringValue } from 'ms'
-import { UserRegisterDto, UserDto, UserLoginDto } from './auth.dto'
-import { PrismaService } from '../../prisma/prisma.service'
+import { UserRegisterDto, UserDto, UserLoginDto } from '../user.dto'
+import { PrismaService } from '../../../prisma/prisma.service'
 import { password } from 'bun'
 import type { Response, Request } from 'express'
-import { isDev } from '../../utils/is-dev'
-import { Role } from '../../../generated/prisma/enums'
-import { User } from '../../../generated/prisma/client'
-import { AvatarService } from '../avatar/avatar.service'
+import { isDev } from '../../../utils/is-dev'
+import { Role } from '../../../../generated/prisma/enums'
+import { User } from '../../../../generated/prisma/client'
+import { AvatarService } from './avatar.service'
 
 @Injectable()
-export class AuthService {
+export class UserService {
   private readonly JWT_ACCESS_TOKEN_TTL: StringValue
   private readonly JWT_REFRESH_TOKEN_TTL: StringValue
 

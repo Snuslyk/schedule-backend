@@ -48,6 +48,8 @@ model Schedule {
   start DateTime
   end   DateTime
 
+  mode Mode @default(OTHER)
+
   groupId Int   @unique @map("group_id")
   group   Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
@@ -57,6 +59,11 @@ model Schedule {
 
   @@index([groupId])
   @@map("schedule")
+}
+
+enum Mode {
+  PARITY
+  OTHER
 }
 
 model WeekTemplate {

@@ -12,7 +12,7 @@ import { ScheduleDto } from '../schedule.dto'
 import { WeekTemplateDto } from '../../week-template/week-template.dto'
 import { ReplaceDto } from '../../replace/replace.dto'
 import { GroupDto } from '../../group/group.dto'
-import { WeekType } from '../../../../generated/prisma/enums'
+import { Mode, WeekType } from '../../../../generated/prisma/enums'
 import { DayDto } from '../../day/day.dto'
 
 @Injectable()
@@ -22,9 +22,8 @@ export class GroupScheduleService {
   async getGroupDay(
     date: Date,
     groupId: number,
-    mode: 'parity' | 'other',
   ): Promise<DayDto> {
-    const week = await this.getGroupWeek(date, groupId, mode)
+    const week = await this.getGroupWeek(date, groupId)
     const dayIndex = getWeekDayIndex(date)
     const day = week.days![dayIndex]
 
@@ -34,7 +33,6 @@ export class GroupScheduleService {
   async getGroupWeek(
     dayOfWeek: Date,
     groupId: number,
-    mode: 'parity' | 'other',
   ) {
     const startOfWeekDate = startOfWeek(dayOfWeek)
 
@@ -45,7 +43,7 @@ export class GroupScheduleService {
     )
 
     const week =
-      mode === 'parity'
+      schedule.mode === Mode.PARITY
         ? this.getParityWeekTemplate(schedule, startOfWeekDate)
         : this.getOtherWeekTemplate(schedule)
 

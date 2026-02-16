@@ -8,7 +8,7 @@ import {
 } from '@aws-sdk/client-s3'
 import sharp from 'sharp'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { PrismaService } from '../../prisma/prisma.service'
+import { PrismaService } from '../../../prisma/prisma.service'
 
 @Injectable()
 export class AvatarService {
