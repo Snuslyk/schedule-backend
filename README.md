@@ -67,6 +67,15 @@ http://localhost:4242
 
 ---
 
+## API Documentation
+
+Scalar API documentation is available at: 
+```
+http://localhost:4242/docs
+```
+
+---
+
 ## Build / Production
 
 ```bash
