@@ -1,9 +1,11 @@
-import { NestFactory } from '@nestjs/core'
+import { NestFactory, Reflector } from '@nestjs/core'
 import { AppModule } from './app.module'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { apiReference } from '@scalar/nestjs-api-reference'
 import { ValidationPipe } from '@nestjs/common'
 import cookieParser from 'cookie-parser'
+import { JwtGuard } from './modules/user/guards/auth.guard'
+import { AdminGuard } from './modules/user/guards/admin.guard'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -21,6 +23,9 @@ async function bootstrap() {
   app.use('/docs', apiReference({ content: document, theme: 'default' }))
 
   app.use(cookieParser())
+
+  const reflector = new Reflector()
+  app.useGlobalGuards(new JwtGuard(reflector), new AdminGuard(reflector))
 
   app.useGlobalPipes(
     new ValidationPipe({

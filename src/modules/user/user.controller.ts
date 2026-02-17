@@ -13,8 +13,6 @@ import {
 import { UserService } from './services/user.service'
 import { UserRegisterDto, UserLoginDto } from './user.dto'
 import type { Response, Request } from 'express'
-import { Authorization } from './decorators/authorization.decorator'
-import { IsAdmin } from './decorators/is-admin.decorator'
 import { Role } from '../../../generated/prisma/enums'
 import {
   ApiBody,
@@ -27,6 +25,7 @@ import { Authorized } from './decorators/authorized.decorator'
 import type { User } from '../../../generated/prisma/client'
 import { File } from './decorators/avatar.decorator'
 import { AvatarService } from './services/avatar.service'
+import { AuthorizedPublic, Public } from '../../decorators/public.decorator'
 
 @ApiTags('User')
 @Controller('user')
@@ -36,8 +35,6 @@ export class UserController {
     private readonly avatarService: AvatarService
   ) {}
 
-  //@Authorization()
-  //@IsAdmin()
   @Post('register')
   @ApiOperation({ summary: 'Register new user' })
   @ApiBody({ type: UserRegisterDto })
@@ -49,6 +46,7 @@ export class UserController {
     return this.authService.register(res, dto)
   }
 
+  @Public()
   @Post('login')
   @ApiOperation({ summary: 'User login' })
   @ApiBody({ type: UserLoginDto })
@@ -60,6 +58,7 @@ export class UserController {
     return this.authService.login(res, dto)
   }
 
+  @Public()
   @Post('refresh')
   @ApiOperation({ summary: 'Refresh access token using refresh token cookie' })
   @ApiCookieAuth('refreshToken')
@@ -71,6 +70,7 @@ export class UserController {
     return this.authService.refresh(req, res)
   }
 
+  @Public()
   @Post('logout')
   @ApiOperation({ summary: 'Logout user and clear cookies' })
   @HttpCode(HttpStatus.OK)
@@ -78,7 +78,7 @@ export class UserController {
     return this.authService.logout(res)
   }
 
-  @Authorization()
+  @AuthorizedPublic()
   @Get('profile')
   @ApiOperation({ summary: 'Get logged user profile' })
   @ApiCookieAuth()
@@ -96,7 +96,7 @@ export class UserController {
     return this.authService.roles(id, role)
   }
 
-  @Authorization()
+  @AuthorizedPublic()
   @Post('avatar')
   @ApiOperation({ summary: 'Avatar uploading to yandex bucket' })
   @File('avatar')

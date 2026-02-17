@@ -11,15 +11,15 @@ import {
 import { ScheduleService } from './schedule.service'
 import { DatePipe } from '../../date/date.pipe'
 import { CreateScheduleDto } from './schedule.dto'
-import { ModePipe } from './mode/mode.pipe'
 import { ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
-import { Mode } from '../../../generated/prisma/enums'
+import { AuthorizedPublic } from '../../decorators/public.decorator'
 
 @ApiTags('Schedule')
 @Controller('schedule')
 export class ScheduleController {
   constructor(private readonly scheduleService: ScheduleService) {}
 
+  @AuthorizedPublic()
   @Get('week/group')
   @ApiOperation({ summary: 'Get weekly schedule for a group' })
   @ApiQuery({
@@ -36,6 +36,7 @@ export class ScheduleController {
     return this.scheduleService.getGroupWeek(week, groupId)
   }
 
+  @AuthorizedPublic()
   @Get('day/group')
   @ApiOperation({ summary: 'Get daily schedule for a group' })
   @ApiQuery({ name: 'day', type: String, description: 'Date (YYYY-MM-DD)' })
@@ -48,6 +49,7 @@ export class ScheduleController {
     return this.scheduleService.getGroupDay(day, groupId)
   }
 
+  @AuthorizedPublic()
   @Get('week/teacher')
   @ApiOperation({ summary: 'Get weekly schedule for a teacher' })
   @ApiQuery({
@@ -64,6 +66,7 @@ export class ScheduleController {
     return this.scheduleService.getTeacherWeek(week, id)
   }
 
+  @AuthorizedPublic()
   @Get('day/teacher')
   @ApiOperation({ summary: 'Get daily schedule for a teacher' })
   @ApiQuery({ name: 'day', type: String, description: 'Date (YYYY-MM-DD)' })
