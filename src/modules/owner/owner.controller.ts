@@ -1,12 +1,14 @@
 import { Controller, Get, ParseIntPipe, Query } from '@nestjs/common'
 import { OwnerService } from './owner.service'
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { AuthorizedPublic } from '../../decorators/public.decorator'
 
 @ApiTags('Owner')
 @Controller('owner')
 export class OwnerController {
   constructor(private readonly ownerService: OwnerService) {}
 
+  @AuthorizedPublic()
   @Get()
   @ApiOperation({ summary: 'Find owners by name with a specified quantity' })
   @ApiQuery({
