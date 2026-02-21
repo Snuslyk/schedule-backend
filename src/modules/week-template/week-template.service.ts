@@ -99,7 +99,7 @@ export class WeekTemplateService {
     } catch (e) {
       if (e.code === 'P2003') {
         throw new NotFoundException(
-          `Schedule with id ${group.schedule.id} not found`,
+          `Schedule, some teacherId or some subjectId not found`,
         )
       }
       if (e.code === 'P2002') {
