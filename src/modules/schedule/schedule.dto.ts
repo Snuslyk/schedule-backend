@@ -1,4 +1,4 @@
-import { IsDate, IsNumber } from 'class-validator'
+import { IsDate, IsEnum, IsNumber } from 'class-validator'
 import { ReplaceDto } from '../replace/replace.dto'
 import { WeekTemplateDto } from '../week-template/week-template.dto'
 import { GroupDto } from '../group/group.dto'
@@ -39,7 +39,7 @@ export class CreateScheduleDto {
     example: 'OTHER',
     type: String,
   })
-  @IsDate()
+  @IsEnum(Mode)
   mode: Mode
 
   @ApiProperty({
